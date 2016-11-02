@@ -92,6 +92,8 @@ int main(int argc, char *argv[])
 {
 	printf("Hello World, I'm game!\n");
 
+	initGame();
+	
 	int FPS=30;
 	double frameTime = 1.0 / FPS;
 	struct timeval lastTime;
