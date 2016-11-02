@@ -39,6 +39,7 @@ vec2 mul(vec2 a, float b) {
 vec2 ballPos;
 vec2 ballPosLastRender;
 vec2 ballDir;
+vec2 ballSize;
 float ballSpeed;
 
 void initGame() {
@@ -47,8 +48,10 @@ void initGame() {
 	ballPosLastRender = ballPos;
 	ballDir.x=0.5f;
 	ballDir.y=0.5f;
+	ballSize.x = 10.0f;
+	ballSize.y = 10.0f;
 	
-	ballSpeed = 5.0f;
+	ballSpeed = 25.0f;
 }
 
 void input() {
@@ -57,6 +60,16 @@ void input() {
 
 void update(float dt) { // update ball position
 	ballPos = add(ballPos, mul(ballDir, ballSpeed*dt));
+	
+	if(ballPos.x <= 0)
+		ballPos.x = -ballPos.x;
+	else if(ballPos.x+ballSize.x >= SCREEN_WIDTH)
+		ballPos.x = -ballPos.x;
+	
+	if(ballPos.y <= 0)
+		ballPos.y = -ballPos.y;
+	else if(ballPos.y+ballSize.y >= SCREEN_HEIGHT)
+		ballPos.y = -ballPos.y;
 }
 
 void renderGame(int fbfd, uint16_t* addr) {
@@ -68,8 +81,8 @@ void renderGame(int fbfd, uint16_t* addr) {
 	
 	int y;
 	int x;
-	for(y = 0; y < 5; y++) {
-		for(x = 0; x < 5; x++) {
+	for(y = 0; y < ballSize.y; y++) {
+		for(x = 0; x < ballSize.x; x++) {
 			int index = (ypos+y)*SCREEN_WIDTH+(xpos+x);
 			if(index > 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
 				addr[index]|=0b1111100000111111;
