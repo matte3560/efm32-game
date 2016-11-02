@@ -36,10 +36,10 @@ vec2 mul(vec2 a, float b) {
 	return ans;
 }
 
-vec2 lerp(vec2 a, vec2 b, float a) {
+vec2 lerp(vec2 a, vec2 b, float c) {
 	vec2 ans;
-	ans.x = a.x*(1-a)+b.x*a;
-	ans.y = a.y*(1-a)+b.y*a;
+	ans.x = a.x*(1-c)+b.x*c;
+	ans.y = a.y*(1-c)+b.y*c;
 	
 	return ans;
 }
