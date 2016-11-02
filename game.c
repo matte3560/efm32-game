@@ -9,6 +9,8 @@
 #include <sys/mman.h>
 #include <linux/fb.h>
 #include <stdbool.h>
+#include <string.h>
+#include <stdint.h>
 
 void input() {
 	
@@ -18,7 +20,18 @@ void update() {
 	
 }
 
-void renderGame(int fbfd, char* addr) {
+void renderGame(int fbfd, uint16_t* addr) {
+	memset(addr, 0, 153600);
+	
+	int posx = 320/2;
+	int posy = 240/2;
+	
+	for(int y = 0; y < 40; y++) {
+		for(int x = 0; x < 20; x++) {
+			addr[(posy+y)*320+(posx+x)]|=0b1111100000111111;
+		}
+	}
+	
 	struct fb_copyarea rect;
 	
 	rect.dx = 0;
@@ -43,7 +56,7 @@ int main(int argc, char *argv[])
 	double frameCounter = 0.0;
 	
 	int pfd = open("/dev/fb0", O_RDWR); // framebuffer
-	char* addr = mmap(NULL, 153600, PROT_WRITE, MAP_PRIVATE, pfd, 0);
+	uint16_t* addr = mmap(NULL, 153600, PROT_READ | PROT_WRITE, MAP_SHARED, pfd, 0);
 	
 	bool done = false;
 	do {
@@ -84,7 +97,7 @@ int main(int argc, char *argv[])
 		if (render)
 		{
 			//render framebuffer
-			//renderGame(pfd, addr);
+			renderGame(pfd, addr);
 			
 			frames++;
 		}
