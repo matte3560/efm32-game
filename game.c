@@ -52,7 +52,7 @@ void initGame() {
 	ballSize.x = 10.0f;
 	ballSize.y = 10.0f;
 	
-	ballSpeed = 25.0f;
+	ballSpeed = 50.0f;
 	/* INIT BALL */
 	
 	/* INIT LEFT PLAYER */
@@ -100,8 +100,8 @@ void renderGame(int fbfd, uint16_t* addr) {
 	
 	rect.dx = (ballPos.x < ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x;
 	rect.dy = (ballPos.y < ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y;
-	rect.width = ((ballPos.x > ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x)+5 - rect.dx;
-	rect.height = ((ballPos.y > ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y)+5 - rect.dy;
+	rect.width = ((ballPos.x > ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x)+10 - rect.dx;
+	rect.height = ((ballPos.y > ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y)+10 - rect.dy;
 	
 	ioctl(fbfd, 0x4680, &rect);
 	
