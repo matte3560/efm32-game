@@ -100,8 +100,8 @@ void renderGame(int fbfd, uint16_t* addr) {
 	
 	rect.dx = (ballPos.x < ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x;
 	rect.dy = (ballPos.y < ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y;
-	rect.width = ((ballPos.x > ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x)+10 - rect.dx;
-	rect.height = ((ballPos.y > ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y)+10 - rect.dy;
+	rect.width = ((ballPos.x > ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x)+11 - rect.dx;
+	rect.height = ((ballPos.y > ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y)+11 - rect.dy;
 	
 	ioctl(fbfd, 0x4680, &rect);
 	
