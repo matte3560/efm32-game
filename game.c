@@ -26,8 +26,10 @@ void renderGame(int fbfd, uint16_t* addr) {
 	int posx = 320/2;
 	int posy = 240/2;
 	
-	for(int y = 0; y < 40; y++) {
-		for(int x = 0; x < 20; x++) {
+	int y;
+	int x;
+	for(y = 0; y < 40; y++) {
+		for(x = 0; x < 20; x++) {
 			addr[(posy+y)*320+(posx+x)]|=0b1111100000111111;
 		}
 	}
