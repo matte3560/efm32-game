@@ -82,6 +82,7 @@ void update(float dt) { // update ball position
 
 void renderGame(int fbfd, uint16_t* addr) {
 	memset(addr, 0, SCREENSIZE_BYTES); // clear buffer
+	struct fb_copyarea rect;
 	
 	/* RENDER BALL */
 	int xpos = (int)ballPos.x;
@@ -96,16 +97,16 @@ void renderGame(int fbfd, uint16_t* addr) {
 				addr[index]|=0b1111100000111111;
 		}
 	}
-	struct fb_copyarea rect;
 	
-	rect.dx = (ballPos.x < ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x;
-	rect.dy = (ballPos.y < ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y;
-	rect.width = ((ballPos.x > ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x)+(ballSize.x+1) - rect.dx;
-	rect.height = ((ballPos.y > ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y)+(ballSize.y+1) - rect.dy;
+	rect.dx = (xpos < ballPosLastRender.x) ? xpos : ballPosLastRender.x;
+	rect.dy = (ypos < ballPosLastRender.y) ? ypos : ballPosLastRender.y;
+	rect.width = ((xpos > ballPosLastRender.x) ? xpos : ballPosLastRender.x)+(ballSize.x+1) - rect.dx;
+	rect.height = ((ypos > ballPosLastRender.y) ? ypos : ballPosLastRender.y)+(ballSize.y+1) - rect.dy;
 	
 	ioctl(fbfd, 0x4680, &rect);
 	
-	ballPosLastRender=ballPos;
+	ballPosLastRender.x=xpos;
+	ballPosLastRender.y=ypos;
 	/* RENDER BALL */
 }
 
