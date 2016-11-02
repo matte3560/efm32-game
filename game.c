@@ -12,36 +12,78 @@
 #include <string.h>
 #include <stdint.h>
 
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 240
+#define SCREENSIZE_BYTES 153600
+
+typedef struct {
+  float x, y;
+} vec2;
+
+vec2 add(vec2 a, vec2 b) {
+	vec2 ans;
+	ans.x = a.x+b.x;
+	ans.y = a.y+b.y;
+	
+	return ans;
+}
+
+vec2 mul(vec2 a, float b) {
+	vec2 ans;
+	ans.x = a.x*b;
+	ans.y = a.y*b;
+	
+	return ans;
+}
+
+vec2 ballPos;
+vec2 ballPosLastRender;
+vec2 ballDir;
+float ballSpeed;
+
+void initGame() {
+	ballPos.x = SCREEN_WIDTH/2;
+	ballPos.y = SCREEN_HEIGHT/2;
+	ballPosLastRender = ballPos;
+	ballDir.x=0.5f;
+	ballDir.y=0.5f;
+	
+	ballSpeed = 5.0f;
+}
+
 void input() {
 	
 }
 
-void update() {
-	
+void update(float dt) { // update ball position
+	ballPos = add(ballPos, mul(ballDir, ballSpeed*dt));
 }
 
 void renderGame(int fbfd, uint16_t* addr) {
-	memset(addr, 0, 153600);
+	memset(addr, 0, SCREENSIZE_BYTES); // clear buffer
 	
-	int posx = 320/2;
-	int posy = 240/2;
+	/* RENDER BALL */
+	int xpos = (int)ballPos.x;
+	int ypos = (int)ballPos.y;
 	
 	int y;
 	int x;
-	for(y = 0; y < 40; y++) {
-		for(x = 0; x < 20; x++) {
-			addr[(posy+y)*320+(posx+x)]|=0b1111100000111111;
+	for(y = 0; y < 5; y++) {
+		for(x = 0; x < 5; x++) {
+			addr[(ypos+y)*SCREEN_WIDTH+(xpos+x)]|=0b1111100000111111;
 		}
 	}
-	
 	struct fb_copyarea rect;
 	
-	rect.dx = 0;
-	rect.dy = 0;
-	rect.width = 320;
-	rect.height = 240;
+	rect.dx = (ballPos.x < ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x;
+	rect.dy = (ballPos.y < ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y;
+	rect.width = ((ballPos.x > ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x)+5 - rect.dx;
+	rect.height = ((ballPos.y > ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y)+5 - rect.dy;
 	
 	ioctl(fbfd, 0x4680, &rect);
+	
+	ballPosLastRender=ballPos;
+	/* RENDER BALL */
 }
 
 int main(int argc, char *argv[])
@@ -58,7 +100,7 @@ int main(int argc, char *argv[])
 	double frameCounter = 0.0;
 	
 	int pfd = open("/dev/fb0", O_RDWR); // framebuffer
-	uint16_t* addr = mmap(NULL, 153600, PROT_READ | PROT_WRITE, MAP_SHARED, pfd, 0);
+	uint16_t* addr = mmap(NULL, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, pfd, 0);
 	
 	bool done = false;
 	do {
@@ -85,7 +127,7 @@ int main(int argc, char *argv[])
 			//game input
 			input();
 			//game update
-			update();
+			update((float)frameTime);
 			
 			if (frameCounter >= 1.0)
 			{
@@ -105,7 +147,7 @@ int main(int argc, char *argv[])
 		}
 	} while(!done);
 	
-	munmap(addr, 153600);
+	munmap(addr, SCREENSIZE_BYTES);
 	close(pfd);
 	
 	exit(EXIT_SUCCESS);
