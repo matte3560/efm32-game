@@ -70,7 +70,9 @@ void renderGame(int fbfd, uint16_t* addr) {
 	int x;
 	for(y = 0; y < 5; y++) {
 		for(x = 0; x < 5; x++) {
-			addr[(ypos+y)*SCREEN_WIDTH+(xpos+x)]|=0b1111100000111111;
+			int index = (ypos+y)*SCREEN_WIDTH+(xpos+x);
+			if(index > 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
+				addr[index]|=0b1111100000111111;
 		}
 	}
 	struct fb_copyarea rect;
