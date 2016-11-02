@@ -70,14 +70,14 @@ void update(float dt) { // update ball position
 	ballPos = add(ballPos, mul(ballDir, ballSpeed*dt));
 	
 	if(ballPos.x <= 0)
-		ballPos.x = -ballPos.x;
+		ballDir.x = -ballDir.x;
 	else if(ballPos.x+ballSize.x >= SCREEN_WIDTH-1)
-		ballPos.x = -ballPos.x;
+		ballDir.x = -ballDir.x;
 	
 	if(ballPos.y <= 0)
-		ballPos.y = -ballPos.y;
+		ballDir.y = -ballDir.y;
 	else if(ballPos.y+ballSize.y >= SCREEN_HEIGHT-1)
-		ballPos.y = -ballPos.y;
+		ballDir.y = -ballDir.y;
 }
 
 void renderGame(int fbfd, uint16_t* addr) {
