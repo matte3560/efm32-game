@@ -8,6 +8,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <linux/fb.h>
+#include <stdbool.h>
 
 void input() {
 	
@@ -17,7 +18,7 @@ void update() {
 	
 }
 
-void render(int &fbfd, char* addr) {
+void renderGame(int fbfd, char* addr) {
 	struct fb_copyarea rect;
 	
 	rect.dx = 0;
@@ -83,7 +84,7 @@ int main(int argc, char *argv[])
 		if (render)
 		{
 			//render framebuffer
-			render(pfd, addr);
+			//renderGame(pfd, addr);
 			
 			frames++;
 		}
