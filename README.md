@@ -1,2 +1,2 @@
-### EFM32 project
-## main game files
+## EFM32 project
+### main game files
