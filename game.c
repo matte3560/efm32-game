@@ -100,8 +100,8 @@ void renderGame(int fbfd, uint16_t* addr) {
 	
 	rect.dx = (ballPos.x < ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x;
 	rect.dy = (ballPos.y < ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y;
-	rect.width = ((ballPos.x > ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x)+11 - rect.dx;
-	rect.height = ((ballPos.y > ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y)+11 - rect.dy;
+	rect.width = ((ballPos.x > ballPosLastRender.x) ? ballPos.x : ballPosLastRender.x)+(ballSize.x+1) - rect.dx;
+	rect.height = ((ballPos.y > ballPosLastRender.y) ? ballPos.y : ballPosLastRender.y)+(ballSize.y+1) - rect.dy;
 	
 	ioctl(fbfd, 0x4680, &rect);
 	
@@ -126,6 +126,17 @@ int main(int argc, char *argv[])
 	
 	int pfd = open("/dev/fb0", O_RDWR); // framebuffer
 	uint16_t* addr = mmap(NULL, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, pfd, 0);
+	
+	//clear screen get rid of penguin
+	memset(addr, 0, SCREENSIZE_BYTES); // clear buffer
+	struct fb_copyarea rect;
+	
+	rect.dx = 0;
+	rect.dy = 0;
+	rect.width = SCREEN_WIDTH;
+	rect.height = SCREEN_HEIGHT;
+	
+	ioctl(fbfd, 0x4680, &rect);
 	
 	bool done = false;
 	do {
