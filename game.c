@@ -43,6 +43,7 @@ vec2 ballSize;
 float ballSpeed;
 
 void initGame() {
+	/* INIT BALL */
 	ballPos.x = SCREEN_WIDTH/2;
 	ballPos.y = SCREEN_HEIGHT/2;
 	ballPosLastRender = ballPos;
@@ -52,9 +53,16 @@ void initGame() {
 	ballSize.y = 10.0f;
 	
 	ballSpeed = 25.0f;
+	/* INIT BALL */
+	
+	/* INIT LEFT PLAYER */
+	/* INIT LEFT PLAYER */
+	
+	/* INIT RIGHT PLAYER */
+	/* INIT RIGHT PLAYER */
 }
 
-void input() {
+void input() { // update player positions
 	
 }
 
@@ -63,12 +71,12 @@ void update(float dt) { // update ball position
 	
 	if(ballPos.x <= 0)
 		ballPos.x = -ballPos.x;
-	else if(ballPos.x+ballSize.x >= SCREEN_WIDTH)
+	else if(ballPos.x+ballSize.x >= SCREEN_WIDTH-1)
 		ballPos.x = -ballPos.x;
 	
 	if(ballPos.y <= 0)
 		ballPos.y = -ballPos.y;
-	else if(ballPos.y+ballSize.y >= SCREEN_HEIGHT)
+	else if(ballPos.y+ballSize.y >= SCREEN_HEIGHT-1)
 		ballPos.y = -ballPos.y;
 }
 
