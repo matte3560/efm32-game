@@ -36,13 +36,34 @@ vec2 mul(vec2 a, float b) {
 	return ans;
 }
 
+vec2 lerp(vec2 a, vec2 b, float a) {
+	vec2 ans;
+	ans.x = a.x*(1-a)+b.x*a;
+	ans.y = a.y*(1-a)+b.y*a;
+	
+	return ans;
+}
+
 vec2 ballPos;
 vec2 ballPosLastRender;
 vec2 ballDir;
 vec2 ballSize;
 float ballSpeed;
 
-void initGame() {
+void initGame(int fbfd, uint16_t* addr) {
+	
+	/* INIT SCREEN */
+	memset(addr, 0, SCREENSIZE_BYTES); //clear screen get rid of penguin
+	struct fb_copyarea rect;
+	
+	rect.dx = 0;
+	rect.dy = 0;
+	rect.width = SCREEN_WIDTH;
+	rect.height = SCREEN_HEIGHT;
+	
+	ioctl(fbfd, 0x4680, &rect);
+	/* INIT SCREEN */
+	
 	/* INIT BALL */
 	ballPos.x = SCREEN_WIDTH/2;
 	ballPos.y = SCREEN_HEIGHT/2;
@@ -113,8 +134,6 @@ void renderGame(int fbfd, uint16_t* addr) {
 int main(int argc, char *argv[])
 {
 	printf("Hello World, I'm game!\n");
-
-	initGame();
 	
 	int FPS=30;
 	double frameTime = 1.0 / FPS;
@@ -128,16 +147,7 @@ int main(int argc, char *argv[])
 	int pfd = open("/dev/fb0", O_RDWR); // framebuffer
 	uint16_t* addr = mmap(NULL, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, pfd, 0);
 	
-	//clear screen get rid of penguin
-	memset(addr, 0, SCREENSIZE_BYTES); // clear buffer
-	struct fb_copyarea rect;
-	
-	rect.dx = 0;
-	rect.dy = 0;
-	rect.width = SCREEN_WIDTH;
-	rect.height = SCREEN_HEIGHT;
-	
-	ioctl(fbfd, 0x4680, &rect);
+	initGame(pfd, addr);
 	
 	bool done = false;
 	do {
