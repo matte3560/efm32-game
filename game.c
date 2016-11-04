@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdint.h>
+#include <math.h>
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -36,20 +37,33 @@ vec2 mul(vec2 a, float b) {
 	return ans;
 }
 
-vec2 lerp(vec2 a, vec2 b, float c) {
-	vec2 ans;
-	ans.x = a.x*(1-c)+b.x*c;
-	ans.y = a.y*(1-c)+b.y*c;
-	
-	return ans;
+vec2 normalize(vec a) {
+	float len = sqrtf(a.x*a.x+a.y*a.y);
+	a.x = a.x / len;
+	a.y = a.y / len;
 }
 
+// ball variables
 vec2 ballPos;
 vec2 ballPosLastRender;
 vec2 ballDir;
 int ballSizeX;
 int ballSizeY;
 float ballSpeed;
+
+// player left variables
+vec2 playerLeftPos;
+vec2 playerLeftLastRender;
+int playerLeftSizeX;
+int playerLeftSizeY;
+float playerLeftSpeed;
+
+// player right variables
+vec2 playerRightPos;
+vec2 playerRightLastRender;
+int playerRightSizeX;
+int playerRightSizeY;
+float playerRightSpeed;
 
 void initGame(int fbfd, uint16_t* addr) {
 	
@@ -63,24 +77,39 @@ void initGame(int fbfd, uint16_t* addr) {
 	rect.height = SCREEN_HEIGHT;
 	
 	ioctl(fbfd, 0x4680, &rect);
+	
+	srand(time(0)); // seed the random number generator
+	
 	/* INIT SCREEN */
 	
 	/* INIT BALL */
+	ballSizeX = 10;
+	ballSizeY = 10;
 	ballPos.x = SCREEN_WIDTH/2;
 	ballPos.y = SCREEN_HEIGHT/2;
 	ballPosLastRender = ballPos;
-	ballDir.x=0.5f;
-	ballDir.y=0.5f;
-	ballSizeX = 10;
-	ballSizeY = 10;
-	
+	ballDir.x=(rand()/(float)RAND_MAX)*2 - 1;
+	ballDir.y=(rand()/(float)RAND_MAX)*2 - 1;
+	ballDir = normalize(ballDir); // normalized direction vector
 	ballSpeed = 50.0f;
 	/* INIT BALL */
 	
 	/* INIT LEFT PLAYER */
+	playerLeftSizeX = 10.0f;
+	playerLeftSizeY = 40.0f;
+	playerLeftPos.x = 10.0f;
+	playerLeftPos.y = (SCREEN_HEIGHT/2)-(playerLeftSizeY/2);
+	playerLeftLastRender = playerLeftPos;
+	playerLeftSpeed = 50.0f;
 	/* INIT LEFT PLAYER */
 	
 	/* INIT RIGHT PLAYER */
+	playerRightSizeX = 10.0f;
+	playerRightSizeY = 40.0f;
+	playerRightPos.x = SCREEN_WIDTH-playerRightSizeX-11.0f;
+	playerRightPos.y = (SCREEN_HEIGHT/2)-(playerRightSizeY/2);
+	playerRightLastRender = playerRightPos;
+	playerRightSpeed = 50.0f;
 	/* INIT RIGHT PLAYER */
 }
 
@@ -91,6 +120,7 @@ void input() { // update player positions
 void update(float dt) { // update ball position
 	ballPos = add(ballPos, mul(ballDir, ballSpeed*dt));
 	
+	// TODO remove in the final version just for testing
 	if(ballPos.x <= 0) {
 		ballPos.x = 0;
 		ballDir.x = -ballDir.x;
@@ -111,31 +141,77 @@ void update(float dt) { // update ball position
 void renderGame(int fbfd, uint16_t* addr) {
 	memset(addr, 0, SCREENSIZE_BYTES); // clear buffer
 	struct fb_copyarea rect;
-	
-	/* RENDER BALL */
-	int xpos = (int)ballPos.x;
-	int ypos = (int)ballPos.y;
-	
 	int y;
 	int x;
+	
+	/* RENDER BALL */
+	int ballxpos = (int)ballPos.x;
+	int ballypos = (int)ballPos.y;
+	
 	for(y = 0; y < ballSizeY; y++) {
 		for(x = 0; x < ballSizeX; x++) {
-			int index = (ypos+y)*SCREEN_WIDTH+(xpos+x);
+			int index = (ballypos+y)*SCREEN_WIDTH+(ballxpos+x);
 			if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
-				addr[index]|=0b1111100000111111;
+				addr[index]|=0b1111100000011111;
 		}
 	}
 	
-	rect.dx = (xpos < ballPosLastRender.x) ? xpos : ballPosLastRender.x;
-	rect.dy = (ypos < ballPosLastRender.y) ? ypos : ballPosLastRender.y;
-	rect.width = ((xpos > ballPosLastRender.x) ? xpos : ballPosLastRender.x)+(ballSizeX+1) - rect.dx;
-	rect.height = ((ypos > ballPosLastRender.y) ? ypos : ballPosLastRender.y)+(ballSizeY+1) - rect.dy;
+	rect.dx = (ballxpos < ballPosLastRender.x) ? ballxpos : ballPosLastRender.x;
+	rect.dy = (ballypos < ballPosLastRender.y) ? ballypos : ballPosLastRender.y;
+	rect.width = ((ballxpos > ballPosLastRender.x) ? ballxpos : ballPosLastRender.x)+(ballSizeX+1) - rect.dx;
+	rect.height = ((ballypos > ballPosLastRender.y) ? ballypos : ballPosLastRender.y)+(ballSizeY+1) - rect.dy;
 	
 	ioctl(fbfd, 0x4680, &rect);
 	
-	ballPosLastRender.x=xpos;
-	ballPosLastRender.y=ypos;
+	ballPosLastRender.x=ballxpos;
+	ballPosLastRender.y=ballypos;
 	/* RENDER BALL */
+	
+	/* RENDER PLAYER LEFT */
+	int playerleftposx = (int)playerLeftPos.x;
+	int playerleftposy = (int)playerLeftPos.y;
+	
+	for(y = 0; y < playerLeftSizeY; y++) {
+		for(x = 0; x < playerLeftSizeX; x++) {
+			int index = (playerleftposy+y)*SCREEN_WIDTH+(playerleftposx+x);
+			if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
+				addr[index]|=0b0000000000011111;
+		}
+	}
+	
+	rect.dx = (playerleftposx < playerLeftLastRender.x) ? playerleftposx : playerLeftLastRender.x;
+	rect.dy = (playerleftposy < playerLeftLastRender.y) ? playerleftposy : playerLeftLastRender.y;
+	rect.width = ((playerleftposx > playerLeftLastRender.x) ? playerleftposx : playerLeftLastRender.x)+(playerLeftSizeX+1) - rect.dx;
+	rect.height = ((playerleftposy > playerLeftLastRender.y) ? playerleftposy : playerLeftLastRender.y)+(playerLeftSizeY+1) - rect.dy;
+	
+	ioctl(fbfd, 0x4680, &rect);
+	
+	playerLeftLastRender.x=playerleftposx;
+	playerLeftLastRender.y=playerleftposy;
+	/* RENDER PLAYER LEFT */
+	
+	/* RENDER PLAYER RIGHT */
+	int playerrightposx = (int)playerRightPos.x;
+	int playerrightposy = (int)playerRightPos.y;
+	
+	for(y = 0; y < playerRightSizeY; y++) {
+		for(x = 0; x < playerRightSizeX; x++) {
+			int index = (playerrightposy+y)*SCREEN_WIDTH+(playerrightposx+x);
+			if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
+				addr[index]|=0b1111100000000000;
+		}
+	}
+	
+	rect.dx = (playerrightposx < playerRightLastRender.x) ? playerrightposx : playerRightLastRender.x;
+	rect.dy = (playerrightposy < playerRightLastRender.y) ? playerrightposy : playerRightLastRender.y;
+	rect.width = ((playerrightposx > playerRightLastRender.x) ? playerrightposx : playerRightLastRender.x)+(playerRightSizeX+1) - rect.dx;
+	rect.height = ((playerrightposy > playerRightLastRender.y) ? playerrightposy : playerRightLastRender.y)+(playerRightSizeY+1) - rect.dy;
+	
+	ioctl(fbfd, 0x4680, &rect);
+	
+	playerRightLastRender.x=playerrightposx;
+	playerRightLastRender.y=playerrightposy;
+	/* RENDER PLAYER RIGHT */
 }
 
 int main(int argc, char *argv[])
