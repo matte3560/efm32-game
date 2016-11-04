@@ -38,9 +38,12 @@ vec2 mul(vec2 a, float b) {
 }
 
 vec2 normalize(vec2 a) {
+	vec2 ans;
 	float len = sqrtf(a.x*a.x+a.y*a.y);
-	a.x = a.x / len;
-	a.y = a.y / len;
+	ans.x = a.x / len;
+	ans.y = a.y / len;
+
+	return ans;
 }
 
 // ball variables
@@ -136,35 +139,35 @@ void update(float dt) { // update ball position
 		ballDir.y = -ballDir.y;
 	}
 	
-	// /* PLAYER LEFT COLLISION */
-	// if(	ballPos.x <= playerLeftPos.x+playerLeftSizeX &&
-		// (ballPos.y-ballSizeY) >= playerLeftPos.y &&
-		// ballPos.y <= playerLeftPos.y + playerLeftSizeY) {
-		// ballPos.x = playerLeftPos.x+playerLeftSizeX;
-		// float relativeIntersectY = (playerLeftPos.y+(playerLeftSizeY/2.0f)) - (ballPos.y+(ballSizeY/2.0f));
-		
-		// float normalizedRelativeIntersectionY = (relativeIntersectY/(playerLeftSizeY/2.0f));
-		// float bounceAngle = normalizedRelativeIntersectionY * ((5*3.14159f)/12);
-		// ballDir.x = cosf(bounceAngle);
-		// ballDir.y = -sinf(bounceAngle);
-		// ballDir = normalize(ballDir);
-	// }
-	// /* PLAYER LEFT COLLISION */
+	/* PLAYER LEFT COLLISION */
+	if(	ballPos.x <= playerLeftPos.x+playerLeftSizeX &&
+	     (ballPos.y-ballSizeY) >= playerLeftPos.y &&
+	     ballPos.y <= playerLeftPos.y + playerLeftSizeY) {
+	     ballPos.x = playerLeftPos.x+playerLeftSizeX;
+	     float relativeIntersectY = (playerLeftPos.y+(playerLeftSizeY/2.0f)) - (ballPos.y+(ballSizeY/2.0f));
+	     
+	     float normalizedRelativeIntersectionY = (relativeIntersectY/(playerLeftSizeY/2.0f));
+	     float bounceAngle = normalizedRelativeIntersectionY * ((5*3.14159f)/12);
+	     ballDir.x = cosf(bounceAngle);
+	     ballDir.y = -sinf(bounceAngle);
+	     ballDir = normalize(ballDir);
+	}
+	/* PLAYER LEFT COLLISION */
 	
-	// /* PLAYER RIGHT COLLISION */
-	// if(	ballPos.x + ballSizeX >= playerRightPos.x &&
-		// (ballPos.y-ballSizeY) >= playerRightPos.y &&
-		// ballPos.y <= playerRightPos.y + playerRightSizeY) {
-		// ballPos.x = playerRightPos.x-ballSizeX;
-		// float relativeIntersectY = (playerRightPos.y+(playerRightSizeY/2.0f)) - (ballPos.y+(ballSizeY/2.0f));
-		
-		// float normalizedRelativeIntersectionY = (relativeIntersectY/(playerRightSizeY/2.0f));
-		// float bounceAngle = normalizedRelativeIntersectionY * ((5*3.14159f)/12);
-		// ballDir.x = cosf(bounceAngle);
-		// ballDir.y = -sinf(bounceAngle);
-		// ballDir = normalize(ballDir);
-	// }
-	// /* PLAYER RIGHT COLLISION */
+	/* PLAYER RIGHT COLLISION */
+	if(	ballPos.x + ballSizeX >= playerRightPos.x &&
+	     (ballPos.y-ballSizeY) >= playerRightPos.y &&
+	     ballPos.y <= playerRightPos.y + playerRightSizeY) {
+	     ballPos.x = playerRightPos.x-ballSizeX;
+	     float relativeIntersectY = (playerRightPos.y+(playerRightSizeY/2.0f)) - (ballPos.y+(ballSizeY/2.0f));
+	     
+	     float normalizedRelativeIntersectionY = (relativeIntersectY/(playerRightSizeY/2.0f));
+	     float bounceAngle = normalizedRelativeIntersectionY * ((5*3.14159f)/12);
+	     ballDir.x = cosf(bounceAngle);
+	     ballDir.y = -sinf(bounceAngle);
+	     ballDir = normalize(ballDir);
+	}
+	/* PLAYER RIGHT COLLISION */
 }
 
 void renderGame(int fbfd, uint16_t* addr) {
