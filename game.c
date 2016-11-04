@@ -47,7 +47,8 @@ vec2 lerp(vec2 a, vec2 b, float c) {
 vec2 ballPos;
 vec2 ballPosLastRender;
 vec2 ballDir;
-vec2 ballSize;
+int ballSizeX;
+int ballSizeY;
 float ballSpeed;
 
 void initGame(int fbfd, uint16_t* addr) {
@@ -70,8 +71,8 @@ void initGame(int fbfd, uint16_t* addr) {
 	ballPosLastRender = ballPos;
 	ballDir.x=0.5f;
 	ballDir.y=0.5f;
-	ballSize.x = 10.0f;
-	ballSize.y = 10.0f;
+	ballSizeX = 10;
+	ballSizeY = 10;
 	
 	ballSpeed = 50.0f;
 	/* INIT BALL */
@@ -90,15 +91,21 @@ void input() { // update player positions
 void update(float dt) { // update ball position
 	ballPos = add(ballPos, mul(ballDir, ballSpeed*dt));
 	
-	if(ballPos.x <= 0)
+	if(ballPos.x <= 0) {
+		ballPos.x = 0;
 		ballDir.x = -ballDir.x;
-	else if(ballPos.x+ballSize.x >= SCREEN_WIDTH-1)
+	} else if(ballPos.x+ballSizeX >= SCREEN_WIDTH-1) {
+		ballPos.x = SCREEN_WIDTH - ballSizeX - 1;
 		ballDir.x = -ballDir.x;
+	}
 	
-	if(ballPos.y <= 0)
+	if(ballPos.y <= 0) {
+		ballPos.y = 0;
 		ballDir.y = -ballDir.y;
-	else if(ballPos.y+ballSize.y >= SCREEN_HEIGHT-1)
+	} else if(ballPos.y+ballSizeY >= SCREEN_HEIGHT-1) {
+		ballPos.y = SCREEN_HEIGHT - ballSizeY - 1;
 		ballDir.y = -ballDir.y;
+	}
 }
 
 void renderGame(int fbfd, uint16_t* addr) {
@@ -111,18 +118,18 @@ void renderGame(int fbfd, uint16_t* addr) {
 	
 	int y;
 	int x;
-	for(y = 0; y < ballSize.y; y++) {
-		for(x = 0; x < ballSize.x; x++) {
+	for(y = 0; y < ballSizeY; y++) {
+		for(x = 0; x < ballSizeX; x++) {
 			int index = (ypos+y)*SCREEN_WIDTH+(xpos+x);
-			if(index > 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
+			if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
 				addr[index]|=0b1111100000111111;
 		}
 	}
 	
 	rect.dx = (xpos < ballPosLastRender.x) ? xpos : ballPosLastRender.x;
 	rect.dy = (ypos < ballPosLastRender.y) ? ypos : ballPosLastRender.y;
-	rect.width = ((xpos > ballPosLastRender.x) ? xpos : ballPosLastRender.x)+(ballSize.x+1) - rect.dx;
-	rect.height = ((ypos > ballPosLastRender.y) ? ypos : ballPosLastRender.y)+(ballSize.y+1) - rect.dy;
+	rect.width = ((xpos > ballPosLastRender.x) ? xpos : ballPosLastRender.x)+(ballSizeX+1) - rect.dx;
+	rect.height = ((ypos > ballPosLastRender.y) ? ypos : ballPosLastRender.y)+(ballSizeY+1) - rect.dy;
 	
 	ioctl(fbfd, 0x4680, &rect);
 	
