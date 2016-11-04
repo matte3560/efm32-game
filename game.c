@@ -181,7 +181,7 @@ void renderGame(int fbfd, uint16_t* addr) {
 		for(x = 0; x < ballSizeX; x++) {
 			int index = (ballypos+y)*SCREEN_WIDTH+(ballxpos+x);
 			if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
-				addr[index]|=0b1111100000011111;
+				addr[index]|=0b0000011111100000;
 		}
 	}
 	
