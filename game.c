@@ -93,7 +93,7 @@ void initGame(int fbfd, uint16_t* addr) {
 	ballDir.x=(rand()/(float)RAND_MAX)*2 - 1;
 	ballDir.y=(rand()/(float)RAND_MAX)*2 - 1;
 	ballDir = normalize(ballDir); // normalized direction vector
-	ballSpeed = 100.0f;
+	ballSpeed = 300.0f;
 	/* INIT BALL */
 	
 	/* INIT LEFT PLAYER */
@@ -150,7 +150,7 @@ void update(float dt) { // update ball position
 	     float relativeIntersectY = (playerLeftPos.y+(playerLeftSizeY/2.0f)) - (ballPos.y+(ballSizeY/2.0f));
 	     
 	     float normalizedRelativeIntersectionY = (relativeIntersectY/(playerLeftSizeY/2.0f));
-	     float bounceAngle = normalizedRelativeIntersectionY * (M_PI/3);
+	     float bounceAngle = normalizedRelativeIntersectionY * (M_PI/4); //max 45 degree bounce
 	     ballDir.x = cosf(bounceAngle);
 	     ballDir.y = -sinf(bounceAngle);
 	     ballDir = normalize(ballDir);
@@ -165,7 +165,7 @@ void update(float dt) { // update ball position
 	     float relativeIntersectY = (playerRightPos.y+(playerRightSizeY/2.0f)) - (ballPos.y+(ballSizeY/2.0f));
 	     
 	     float normalizedRelativeIntersectionY = (relativeIntersectY/(playerRightSizeY/2.0f));
-	     float bounceAngle = normalizedRelativeIntersectionY * (M_PI/3); //max 60 degree bounce
+	     float bounceAngle = normalizedRelativeIntersectionY * (M_PI/4); //max 45 degree bounce
 	     ballDir.x = -cosf(bounceAngle);
 	     ballDir.y = -sinf(bounceAngle);
 	     ballDir = normalize(ballDir);
