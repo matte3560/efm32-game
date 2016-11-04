@@ -144,7 +144,7 @@ void update(float dt) { // update ball position
 	
 	/* PLAYER LEFT COLLISION */
 	if(	ballPos.x <= playerLeftPos.x+playerLeftSizeX &&
-	     (ballPos.y-ballSizeY) >= playerLeftPos.y &&
+	     (ballPos.y+ballSizeY) >= playerLeftPos.y &&
 	     ballPos.y <= playerLeftPos.y + playerLeftSizeY) {
 	     ballPos.x = playerLeftPos.x+playerLeftSizeX;
 	     float relativeIntersectY = (playerLeftPos.y+(playerLeftSizeY/2.0f)) - (ballPos.y+(ballSizeY/2.0f));
@@ -159,7 +159,7 @@ void update(float dt) { // update ball position
 	
 	/* PLAYER RIGHT COLLISION */
 	if(	ballPos.x + ballSizeX >= playerRightPos.x &&
-	     (ballPos.y-ballSizeY) >= playerRightPos.y &&
+	     (ballPos.y+ballSizeY) >= playerRightPos.y &&
 	     ballPos.y <= playerRightPos.y + playerRightSizeY) {
 	     ballPos.x = playerRightPos.x-ballSizeX;
 	     float relativeIntersectY = (playerRightPos.y+(playerRightSizeY/2.0f)) - (ballPos.y+(ballSizeY/2.0f));
