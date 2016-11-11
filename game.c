@@ -155,6 +155,7 @@ void input(int driver) { // update player positions
 	int character;
 	read(driver, &character, 1);
 	//printf("char read %x\n", c);
+	character=(~character) & 0xFF;
 	
 	if((character & 0b10000000) >> 7) {
 		printf("SW1\n");
