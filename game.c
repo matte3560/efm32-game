@@ -127,7 +127,7 @@ void initGame(int fbfd, uint16_t* addr, FILE* driver) {
 	ballPos.y = SCREEN_HEIGHT/2-(ballSizeY/2.0f);
 	ballPosLastRender = ballPos
 	int dir = 2*(rand()%2)-1;
-	float angle = ((rand()/(float)RAND_MAX)*2 - 1)*(M_PI/6)
+	float angle = ((rand()/(float)RAND_MAX)*2 - 1)*(M_PI/6);
 	ballDir.x=dir*cosf(angle);
 	ballDir.y=-sinf(angle);
 	ballDir = normalize(ballDir); // normalized direction vector
