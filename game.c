@@ -65,8 +65,7 @@ vec2 normalize(vec2 a) {
 vec2 ballPos;
 vec2 ballPosLastRender;
 vec2 ballDir;
-int ballSizeX;
-int ballSizeY;
+int ballSize;
 float ballSpeed;
 
 // player left variables
@@ -121,10 +120,9 @@ void initGame(int fbfd, uint16_t* addr, FILE* driver) {
 	srand(time(0)); // seed the random number generator
 	
 	/* INIT BALL */
-	ballSizeX = 11;
-	ballSizeY = 11;
-	ballPos.x = SCREEN_WIDTH/2-(ballSizeX/2.0f);
-	ballPos.y = SCREEN_HEIGHT/2-(ballSizeY/2.0f);
+	ballSize = 11;
+	ballPos.x = SCREEN_WIDTH/2-(ballSize/2.0f);
+	ballPos.y = SCREEN_HEIGHT/2-(ballSize/2.0f);
 	ballPosLastRender = ballPos;
 	int dir = 2*(rand()%2)-1;
 	float angle = ((rand()/(float)RAND_MAX)*2 - 1)*(M_PI/6);
@@ -164,8 +162,8 @@ void update(float dt) { // update ball position
 	if(ballPos.x <= 0) {
 		ballPos.x = 0;
 		ballDir.x = -ballDir.x;
-	} else if(ballPos.x+ballSizeX >= SCREEN_WIDTH-1) {
-		ballPos.x = SCREEN_WIDTH - ballSizeX - 1;
+	} else if(ballPos.x+ballSize >= SCREEN_WIDTH-1) {
+		ballPos.x = SCREEN_WIDTH - ballSize - 1;
 		ballDir.x = -ballDir.x;
 	}
 	/* WIN LOGIC */
@@ -174,18 +172,18 @@ void update(float dt) { // update ball position
 	if(ballPos.y <= 0) {
 		ballPos.y = 0;
 		ballDir.y = -ballDir.y;
-	} else if(ballPos.y+ballSizeY >= SCREEN_HEIGHT-1) {
-		ballPos.y = SCREEN_HEIGHT - ballSizeY - 1;
+	} else if(ballPos.y+ballSize >= SCREEN_HEIGHT-1) {
+		ballPos.y = SCREEN_HEIGHT - ballSize - 1;
 		ballDir.y = -ballDir.y;
 	}
 	/* TOP AND BOTTOM SCREEN COLLISION */
 	
 	/* PLAYER LEFT COLLISION */
 	if(	ballPos.x <= playerLeftPos.x+playerLeftSizeX &&
-	     (ballPos.y+ballSizeY) >= playerLeftPos.y &&
+	     (ballPos.y+ballSize) >= playerLeftPos.y &&
 	     ballPos.y <= playerLeftPos.y + playerLeftSizeY) {
 	     ballPos.x = playerLeftPos.x+playerLeftSizeX;
-	     float relativeIntersectY = (playerLeftPos.y+(playerLeftSizeY/2.0f)) - (ballPos.y+(ballSizeY/2.0f));
+	     float relativeIntersectY = (playerLeftPos.y+(playerLeftSizeY/2.0f)) - (ballPos.y+(ballSize/2.0f));
 	     
 	     float normalizedRelativeIntersectionY = (relativeIntersectY/(playerLeftSizeY/2.0f));
 	     float bounceAngle = normalizedRelativeIntersectionY * (M_PI/4); //max 45 degree bounce
@@ -196,11 +194,11 @@ void update(float dt) { // update ball position
 	/* PLAYER LEFT COLLISION */
 	
 	/* PLAYER RIGHT COLLISION */
-	if(	ballPos.x + ballSizeX >= playerRightPos.x &&
-	     (ballPos.y+ballSizeY) >= playerRightPos.y &&
+	if(	ballPos.x + ballSize >= playerRightPos.x &&
+	     (ballPos.y+ballSize) >= playerRightPos.y &&
 	     ballPos.y <= playerRightPos.y + playerRightSizeY) {
-	     ballPos.x = playerRightPos.x-ballSizeX;
-	     float relativeIntersectY = (playerRightPos.y+(playerRightSizeY/2.0f)) - (ballPos.y+(ballSizeY/2.0f));
+	     ballPos.x = playerRightPos.x-ballSize;
+	     float relativeIntersectY = (playerRightPos.y+(playerRightSizeY/2.0f)) - (ballPos.y+(ballSize/2.0f));
 	     
 	     float normalizedRelativeIntersectionY = (relativeIntersectY/(playerRightSizeY/2.0f));
 	     float bounceAngle = normalizedRelativeIntersectionY * (M_PI/4); //max 45 degree bounce
@@ -209,6 +207,39 @@ void update(float dt) { // update ball position
 	     ballDir = normalize(ballDir);
 	}
 	/* PLAYER RIGHT COLLISION */
+}
+
+void putpixel(int x, int y, uint16_t* addr) {
+	int index = y*SCREEN_WIDTH+x;
+	if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
+		addr[index]|=0b0000011111100000;
+}
+
+void drawcircle(int x0, int y0, int radius, uint16_t* addr)
+{
+    int x = radius;
+    int y = 0;
+    int err = 0;
+
+    while (x >= y)
+    {
+        putpixel(x0 + x, y0 + y, addr);
+        putpixel(x0 + y, y0 + x, addr);
+        putpixel(x0 - y, y0 + x, addr);
+        putpixel(x0 - x, y0 + y, addr);
+        putpixel(x0 - x, y0 - y, addr);
+        putpixel(x0 - y, y0 - x, addr);
+        putpixel(x0 + y, y0 - x, addr);
+        putpixel(x0 + x, y0 - y, addr);
+
+        y += 1;
+        err += 1 + 2*y;
+        if (2*(err-x) + 1 > 0)
+        {
+            x -= 1;
+            err += 1 - 2*x;
+        }
+    }
 }
 
 void renderGame(int fbfd, uint16_t* addr) {
@@ -221,23 +252,24 @@ void renderGame(int fbfd, uint16_t* addr) {
 	int ballxpos = (int)ballPos.x;
 	int ballypos = (int)ballPos.y;
 	
-	for(y = 0; y < ballSizeY; y++) {
-		for(x = 0; x < ballSizeX; x++) {
+	drawcircle(ballxpos+ballSize/2, ballypos+ballSize/2, ballSize/2, addr);
+	/*for(y = 0; y < ballSize; y++) {
+		for(x = 0; x < ballSize; x++) {
 			vec2 pixelfromcenter;
-			pixelfromcenter.x = x-ballSizeX/2;
-			pixelfromcenter.y = y-ballSizeY/2;
-			if(length(pixelfromcenter) <= ballSizeX/2) {
+			pixelfromcenter.x = x-ballSize/2;
+			pixelfromcenter.y = y-ballSize/2;
+			if(length(pixelfromcenter) <= ballSize/2) {
 				int index = (ballypos+y)*SCREEN_WIDTH+(ballxpos+x);
 				if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
 					addr[index]|=0b0000011111100000;
 			}
 		}
-	}
+	}*/
 	
 	rect.dx = (ballxpos < ballPosLastRender.x) ? ballxpos : ballPosLastRender.x;
 	rect.dy = (ballypos < ballPosLastRender.y) ? ballypos : ballPosLastRender.y;
-	rect.width = ((ballxpos > ballPosLastRender.x) ? ballxpos : ballPosLastRender.x)+(ballSizeX+1) - rect.dx;
-	rect.height = ((ballypos > ballPosLastRender.y) ? ballypos : ballPosLastRender.y)+(ballSizeY+1) - rect.dy;
+	rect.width = ((ballxpos > ballPosLastRender.x) ? ballxpos : ballPosLastRender.x)+(ballSize+1) - rect.dx;
+	rect.height = ((ballypos > ballPosLastRender.y) ? ballypos : ballPosLastRender.y)+(ballSize+1) - rect.dy;
 	
 	ioctl(fbfd, 0x4680, &rect);
 	
