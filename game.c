@@ -154,7 +154,7 @@ void initGame(int fbfd, uint16_t* addr) {
 void input(int driver) { // update player positions
 	uint8_t character;
 	read(driver, &character, 1);
-	printf("char read %x\n", c);
+	printf("char read %x\n", character);
 }
 
 void update(float dt) { // update ball position
@@ -349,7 +349,7 @@ int main(int argc, char *argv[])
 	uint16_t* addr = mmap(NULL, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, pfd, 0);
 	int driver = open("/dev/gamepad", O_RDWR);
 	
-	initGame(pfd, addr, driver);
+	initGame(pfd, addr);
 	
 	bool done = false;
 	do {
