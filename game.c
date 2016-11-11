@@ -82,7 +82,7 @@ int playerRightSizeX;
 int playerRightSizeY;
 float playerRightSpeed;
 
-void initGame(int fbfd, uint16_t* addr, FILE* driver) {
+void initGame(int fbfd, uint16_t* addr) {
 	
 	/* INIT SCREEN */
 	memset(addr, 0, SCREENSIZE_BYTES); //clear screen get rid of the penguin Tux
@@ -97,12 +97,12 @@ void initGame(int fbfd, uint16_t* addr, FILE* driver) {
 	/* INIT SCREEN */
 	
 	/* INIT GAMEPAD */
-	driver = fopen("/dev/gamepad", "rb");
+	/*driver = fopen("/dev/gamepad", "rb");
 	if (!driver) {
         printf("driver open error\n");
 		exit(1);
     }
-    /*if (signal(SIGIO, &interrupt_handler) == SIG_ERR) {
+    if (signal(SIGIO, &interrupt_handler) == SIG_ERR) {
         printf("interrupt handler error\n");
         exit(1);
     }
@@ -151,10 +151,10 @@ void initGame(int fbfd, uint16_t* addr, FILE* driver) {
 	/* INIT RIGHT PLAYER */
 }
 
-void input(FILE* driver) { // update player positions
-	int c = fgetc(driver);
-	printf("char read %d\n", c);
-	rewind(driver);
+void input(int driver) { // update player positions
+	uint8_t character;
+	read(driver, &character, 1);
+	printf("char read %c\n", c);
 }
 
 void update(float dt) { // update ball position
@@ -347,7 +347,7 @@ int main(int argc, char *argv[])
 	
 	int pfd = open("/dev/fb0", O_RDWR); // open framebuffer
 	uint16_t* addr = mmap(NULL, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, pfd, 0);
-	FILE* driver;
+	int driver = open("/dev/gamepad", O_RDWR);
 	
 	initGame(pfd, addr, driver);
 	
@@ -396,7 +396,7 @@ int main(int argc, char *argv[])
 		}
 	} while(!done);
 	
-	fclose(driver); // close driver
+	close(driver); // close driver
 	
 	//close framebuffer
 	munmap(addr, SCREENSIZE_BYTES);
