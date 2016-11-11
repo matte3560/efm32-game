@@ -125,7 +125,7 @@ void initGame(int fbfd, uint16_t* addr, FILE* driver) {
 	ballSizeY = 11;
 	ballPos.x = SCREEN_WIDTH/2-(ballSizeX/2.0f);
 	ballPos.y = SCREEN_HEIGHT/2-(ballSizeY/2.0f);
-	ballPosLastRender = ballPos
+	ballPosLastRender = ballPos;
 	int dir = 2*(rand()%2)-1;
 	float angle = ((rand()/(float)RAND_MAX)*2 - 1)*(M_PI/6);
 	ballDir.x=dir*cosf(angle);
