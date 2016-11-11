@@ -97,12 +97,12 @@ void initGame(int fbfd, uint16_t* addr, FILE* driver) {
 	/* INIT SCREEN */
 	
 	/* INIT GAMEPAD */
-	/*driver = fopen("/dev/gamepad", "rb");
+	driver = fopen("/dev/gamepad", "rb");
 	if (!driver) {
         printf("driver open error\n");
 		exit(1);
     }
-    if (signal(SIGIO, &interrupt_handler) == SIG_ERR) {
+    /*if (signal(SIGIO, &interrupt_handler) == SIG_ERR) {
         printf("interrupt handler error\n");
         exit(1);
     }
@@ -151,8 +151,10 @@ void initGame(int fbfd, uint16_t* addr, FILE* driver) {
 	/* INIT RIGHT PLAYER */
 }
 
-void input() { // update player positions
-	
+void input(FILE* driver) { // update player positions
+	int c = fgetc(driver);
+	printf("char read %d\n", c);
+	rewind(driver);
 }
 
 void update(float dt) { // update ball position
@@ -252,8 +254,8 @@ void renderGame(int fbfd, uint16_t* addr) {
 	int ballxpos = (int)ballPos.x;
 	int ballypos = (int)ballPos.y;
 	
-	drawcircle(ballxpos+ballSize/2, ballypos+ballSize/2, ballSize/2, addr);
-	/*for(y = 0; y < ballSize; y++) {
+	//drawcircle(ballxpos+ballSize/2, ballypos+ballSize/2, ballSize/2-1, addr);
+	for(y = 0; y < ballSize; y++) {
 		for(x = 0; x < ballSize; x++) {
 			vec2 pixelfromcenter;
 			pixelfromcenter.x = x-ballSize/2;
@@ -264,7 +266,7 @@ void renderGame(int fbfd, uint16_t* addr) {
 					addr[index]|=0b0000011111100000;
 			}
 		}
-	}*/
+	}
 	
 	rect.dx = (ballxpos < ballPosLastRender.x) ? ballxpos : ballPosLastRender.x;
 	rect.dy = (ballypos < ballPosLastRender.y) ? ballypos : ballPosLastRender.y;
@@ -372,7 +374,7 @@ int main(int argc, char *argv[])
 			accumulator -= frameTime;
 			
 			//game input
-			input();
+			input(driver);
 			//game update
 			update((float)frameTime);
 			
