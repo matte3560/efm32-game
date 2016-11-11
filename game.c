@@ -154,7 +154,7 @@ void initGame(int fbfd, uint16_t* addr) {
 void input(int driver) { // update player positions
 	uint8_t character;
 	read(driver, &character, 1);
-	printf("char read %c\n", c);
+	printf("char read %x\n", c);
 }
 
 void update(float dt) { // update ball position
