@@ -12,19 +12,34 @@
 #include <string.h>
 #include <stdint.h>
 #include <math.h>
+#include <signal.h>
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 #define SCREENSIZE_BYTES 153600
 
+void interrupt_handler(); //interrupt function prototype
+
 typedef struct {
   float x, y;
 } vec2;
+
+float length(vec2 a) {
+	return sqrtf(a.x*a.x+a.y*a.y);
+}
 
 vec2 add(vec2 a, vec2 b) {
 	vec2 ans;
 	ans.x = a.x+b.x;
 	ans.y = a.y+b.y;
+	
+	return ans;
+}
+
+vec2 sub(vec2 a, vec2 b) {
+	vec2 ans;
+	ans.x = a.x-b.x;
+	ans.y = a.y-b.y;
 	
 	return ans;
 }
@@ -39,7 +54,7 @@ vec2 mul(vec2 a, float b) {
 
 vec2 normalize(vec2 a) {
 	vec2 ans;
-	float len = sqrtf(a.x*a.x+a.y*a.y);
+	float len = length(a);
 	ans.x = a.x / len;
 	ans.y = a.y / len;
 
@@ -68,7 +83,7 @@ int playerRightSizeX;
 int playerRightSizeY;
 float playerRightSpeed;
 
-void initGame(int fbfd, uint16_t* addr) {
+void initGame(int fbfd, uint16_t* addr, FILE* driver) {
 	
 	/* INIT SCREEN */
 	memset(addr, 0, SCREENSIZE_BYTES); //clear screen get rid of the penguin Tux
@@ -82,16 +97,39 @@ void initGame(int fbfd, uint16_t* addr) {
 	ioctl(fbfd, 0x4680, &rect);
 	/* INIT SCREEN */
 	
+	/* INIT GAMEPAD */
+	/*driver = fopen("/dev/gamepad", "rb");
+	if (!driver) {
+        printf("driver open error\n");
+		exit(1);
+    }
+    if (signal(SIGIO, &interrupt_handler) == SIG_ERR) {
+        printf("interrupt handler error\n");
+        exit(1);
+    }
+    if (fcntl(fileno(driver), F_SETOWN, getpid()) == -1) {
+        printf("PID error.\n");
+        exit(1);
+    }
+    long oflags = fcntl(fileno(driver), F_GETFL);
+    if (fcntl(fileno(driver), F_SETFL, oflags | FASYNC) == -1) {
+        printf("FASYNC error\n");
+        exit(1);
+    }*/
+	/* INIT GAMEPAD */
+	
 	srand(time(0)); // seed the random number generator
 	
 	/* INIT BALL */
-	ballSizeX = 10;
-	ballSizeY = 10;
+	ballSizeX = 11;
+	ballSizeY = 11;
 	ballPos.x = SCREEN_WIDTH/2-(ballSizeX/2.0f);
 	ballPos.y = SCREEN_HEIGHT/2-(ballSizeY/2.0f);
-	ballPosLastRender = ballPos;
-	ballDir.x=(rand()/(float)RAND_MAX)*2 - 1;
-	ballDir.y=(rand()/(float)RAND_MAX)*2 - 1;
+	ballPosLastRender = ballPos
+	int dir = 2*(rand()%2)-1;
+	float angle = ((rand()/(float)RAND_MAX)*2 - 1)*(M_PI/6)
+	ballDir.x=dir*cosf(angle);
+	ballDir.y=-sinf(angle);
 	ballDir = normalize(ballDir); // normalized direction vector
 	ballSpeed = 300.0f;
 	/* INIT BALL */
@@ -185,9 +223,14 @@ void renderGame(int fbfd, uint16_t* addr) {
 	
 	for(y = 0; y < ballSizeY; y++) {
 		for(x = 0; x < ballSizeX; x++) {
-			int index = (ballypos+y)*SCREEN_WIDTH+(ballxpos+x);
-			if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
-				addr[index]|=0b0000011111100000;
+			vec2 pixelfromcenter;
+			pixelfromcenter.x = x-ballSizeX/2;
+			pixelfromcenter.y = y-ballSizeY/2;
+			if(length(pixelfromcenter) <= ballSizeX/2) {
+				int index = (ballypos+y)*SCREEN_WIDTH+(ballxpos+x);
+				if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
+					addr[index]|=0b0000011111100000;
+			}
 		}
 	}
 	
@@ -249,6 +292,12 @@ void renderGame(int fbfd, uint16_t* addr) {
 	/* RENDER PLAYER RIGHT */
 }
 
+void interrupt_handler(int signalnr) //interrupt function
+{
+    printf("Signal nr.: %d\n", signalnr);
+	//Now read from driver
+}
+
 int main(int argc, char *argv[])
 {
 	printf("Hello World, I'm game!\n");
@@ -262,10 +311,11 @@ int main(int argc, char *argv[])
 	int frames = 0;
 	double frameCounter = 0.0;
 	
-	int pfd = open("/dev/fb0", O_RDWR); // framebuffer
+	int pfd = open("/dev/fb0", O_RDWR); // open framebuffer
 	uint16_t* addr = mmap(NULL, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, pfd, 0);
+	FILE* driver;
 	
-	initGame(pfd, addr);
+	initGame(pfd, addr, driver);
 	
 	bool done = false;
 	do {
@@ -312,6 +362,9 @@ int main(int argc, char *argv[])
 		}
 	} while(!done);
 	
+	fclose(driver); // close driver
+	
+	//close framebuffer
 	munmap(addr, SCREENSIZE_BYTES);
 	close(pfd);
 	
