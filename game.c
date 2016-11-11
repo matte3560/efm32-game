@@ -158,28 +158,28 @@ void input(int driver) { // update player positions
 	character=(~character) & 0xFF;
 	
 	if((character & 0b10000000) >> 7) {
-		printf("SW1\n");
+		printf("SW8\n");
 	}
 	if((character & 0b01000000) >> 6) {
-		printf("SW2\n");
-	}
-	if((character & 0b00100000) >> 5) {
-		printf("SW3\n");
-	}
-	if((character & 0b00010000) >> 5) {
-		printf("SW4\n");
-	}
-	if((character & 0b00001000) >> 4) {
-		printf("SW5\n");
-	}
-	if((character & 0b00000100) >> 3) {
-		printf("SW6\n");
-	}
-	if((character & 0b00000010) >> 1) {
 		printf("SW7\n");
 	}
+	if((character & 0b00100000) >> 5) {
+		printf("SW6\n");
+	}
+	if((character & 0b00010000) >> 4) {
+		printf("SW5\n");
+	}
+	if((character & 0b00001000) >> 3) {
+		printf("SW4\n");
+	}
+	if((character & 0b00000100) >> 2) {
+		printf("SW3\n");
+	}
+	if((character & 0b00000010) >> 1) {
+		printf("SW2\n");
+	}
 	if(character & 0b00000001) {
-		printf("SW8\n");
+		printf("SW1\n");
 	}
 }
 
