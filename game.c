@@ -152,9 +152,34 @@ void initGame(int fbfd, uint16_t* addr) {
 }
 
 void input(int driver) { // update player positions
-	uint8_t character;
+	int character;
 	read(driver, &character, 1);
-	printf("char read %x\n", character);
+	//printf("char read %x\n", c);
+	
+	if((character & 0b10000000) >> 7) {
+		printf("SW1\n");
+	}
+	if((character & 0b01000000) >> 6) {
+		printf("SW2\n");
+	}
+	if((character & 0b00100000) >> 5) {
+		printf("SW3\n");
+	}
+	if((character & 0b00010000) >> 5) {
+		printf("SW4\n");
+	}
+	if((character & 0b00001000) >> 4) {
+		printf("SW5\n");
+	}
+	if((character & 0b00000100) >> 3) {
+		printf("SW6\n");
+	}
+	if((character & 0b00000010) >> 1) {
+		printf("SW7\n");
+	}
+	if(character & 0b00000001) {
+		printf("SW8\n");
+	}
 }
 
 void update(float dt) { // update ball position
