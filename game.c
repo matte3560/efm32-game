@@ -138,7 +138,7 @@ void initGame(int fbfd, uint16_t* addr) {
 	playerLeftPos.x = 10.0f;
 	playerLeftPos.y = (SCREEN_HEIGHT/2)-(playerLeftSizeY/2);
 	playerLeftLastRender = playerLeftPos;
-	playerLeftSpeed = 50.0f;
+	playerLeftSpeed = 150.0f;
 	/* INIT LEFT PLAYER */
 	
 	/* INIT RIGHT PLAYER */
@@ -147,7 +147,7 @@ void initGame(int fbfd, uint16_t* addr) {
 	playerRightPos.x = SCREEN_WIDTH-playerRightSizeX-11.0f;
 	playerRightPos.y = (SCREEN_HEIGHT/2)-(playerRightSizeY/2);
 	playerRightLastRender = playerRightPos;
-	playerRightSpeed = 50.0f;
+	playerRightSpeed = 150.0f;
 	/* INIT RIGHT PLAYER */
 }
 
@@ -159,7 +159,7 @@ void input(int driver, float dt) { // update player positions
 	
 	if((character & 0b10000000) >> 7) {
 		printf("SW8\n");
-		playerRightPos.y-=playerRightSpeed*dt;
+		playerRightPos.y+=playerRightSpeed*dt;
 	}
 	if((character & 0b01000000) >> 6) {
 		printf("SW7\n");
@@ -173,14 +173,14 @@ void input(int driver, float dt) { // update player positions
 	}
 	if((character & 0b00001000) >> 3) {
 		printf("SW4\n");
-		playerLeftPos.y-=playerLeftSpeed*dt;
+		playerLeftPos.y+=playerLeftSpeed*dt;
 	}
 	if((character & 0b00000100) >> 2) {
 		printf("SW3\n");
 	}
 	if((character & 0b00000010) >> 1) {
 		printf("SW2\n");
-		playerLeftPos.y+=playerLeftSpeed*dt;
+		playerLeftPos.y-=playerLeftSpeed*dt;
 	}
 	if(character & 0b00000001) {
 		printf("SW1\n");
