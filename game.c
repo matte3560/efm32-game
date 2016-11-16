@@ -160,12 +160,12 @@ void input(int driver, float dt) { // update player positions
 		if(playerLeftPos.y+playerLeftSizeY >= SCREEN_HEIGHT)
 			playerLeftPos.y=SCREEN_HEIGHT-playerLeftSizeY-1;
 	}
-	if(SW4) {
+	if(SW6) {
 		playerRightPos.y+=playerRightSpeed*dt;
 		if(playerRightPos.y < 0)
 			playerRightPos.y=0;
 	}
-	if(SW6) {
+	if(SW8) {
 		playerRightPos.y-=playerRightSpeed*dt;
 		if(playerRightPos.y+playerRightSizeY >= SCREEN_HEIGHT)
 			playerRightPos.y=SCREEN_HEIGHT-playerRightSizeY-1;
