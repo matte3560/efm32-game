@@ -191,12 +191,21 @@ void update(float dt) { // update ball position
 	ballPos = add(ballPos, mul(ballDir, ballSpeed*dt));
 	
 	/* WIN LOGIC */
-	if(ballPos.x <= 0) {
-		ballPos.x = 0;
-		ballDir.x = -ballDir.x;
-	} else if(ballPos.x+ballSize >= SCREEN_WIDTH-1) {
-		ballPos.x = SCREEN_WIDTH - ballSize - 1;
-		ballDir.x = -ballDir.x;
+	bool win=false;
+	if(ballPos.x <= playerLeftPos.x) {
+		win=true;
+	} else if(ballPos.x+ballSize >= playerRightPos.x+playerRightSizeX) {
+		win=true;
+	}
+	if(win) {
+		ballPos.x = SCREEN_WIDTH/2-(ballSize/2.0f);
+		ballPos.y = SCREEN_HEIGHT/2-(ballSize/2.0f);
+		// Setting up max 20 degree angle in random direction
+		int dir = 2*(rand()%2)-1;
+		float angle = ((rand()/(float)RAND_MAX)*2 - 1)*(M_PI/6);
+		ballDir.x=dir*cosf(angle);
+		ballDir.y=-sinf(angle);
+		ballDir = normalize(ballDir); // normalized direction vector
 	}
 	/* WIN LOGIC */
 	
