@@ -185,6 +185,44 @@ void input(int driver, float dt) { // update player positions
 		if(playerRightPos.y+playerRightSizeY >= SCREEN_HEIGHT)
 			playerRightPos.y=SCREEN_HEIGHT-playerRightSizeY-1;
 	}
+	
+	// POLLING
+	/*int input;
+	read(driver, &input, 1);
+	input=(~input) & 0xFF;
+	
+	if((input & 0b10000000) != 0) {
+		playerRightPos.y+=playerRightSpeed*dt;
+		if(playerRightPos.y+playerRightSizeY >= SCREEN_HEIGHT)
+			playerRightPos.y=SCREEN_HEIGHT-playerRightSizeY-1;
+	}
+	if((input & 0b01000000) != 0) {
+		//printf("SW7\n");
+	}
+	if((input & 0b00100000) != 0) {
+		playerRightPos.y-=playerRightSpeed*dt;
+		if(playerRightPos.y < 0)
+			playerRightPos.y=0;
+	}
+	if((input & 0b00010000) != 0) {
+		//printf("SW5\n");
+	}
+	if((input & 0b00001000) != 0) {
+		playerLeftPos.y+=playerLeftSpeed*dt;
+		if(playerLeftPos.y+playerLeftSizeY >= SCREEN_HEIGHT)
+			playerLeftPos.y=SCREEN_HEIGHT-playerLeftSizeY-1;
+	}
+	if((input & 0b00000100) != 0) {
+		//printf("SW3\n");
+	}
+	if((input & 0b00000010) != 0) {
+		playerLeftPos.y-=playerLeftSpeed*dt;
+		if(playerLeftPos.y < 0)
+			playerLeftPos.y=0;
+	}
+	if((input & 0b00000001) != 0) {
+		//printf("SW1\n");
+	}*/
 }
 
 void update(float dt) { // update ball position
@@ -192,9 +230,9 @@ void update(float dt) { // update ball position
 	
 	/* WIN LOGIC */
 	bool win=false;
-	if(ballPos.x <= playerLeftPos.x) {
+	if(ballPos.x <= playerLeftPos.x) { // player right win
 		win=true;
-	} else if(ballPos.x+ballSize >= playerRightPos.x+playerRightSizeX) {
+	} else if(ballPos.x+ballSize >= playerRightPos.x+playerRightSizeX) { // player left win
 		win=true;
 	}
 	if(win) {
