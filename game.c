@@ -131,16 +131,17 @@ void initGame(int fbfd, uint16_t* addr) {
 	ballDir = normalize(ballDir); // normalized direction vector
 	ballSpeed = 300.0f;
 	ball=malloc(ballSize*ballSize*sizeof(int));
-	for(int x=0; x < ballSize; x++){ ball[0*ballSize+x]=0; if(x >= 3 && x <= 6){ ball[0*ballSize+x]=1; }}
-	for(int x=0; x < ballSize; x++){ ball[1*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
-	for(int x=0; x < ballSize; x++){ ball[2*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
-	for(int x=0; x < ballSize; x++){ ball[3*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
-	for(int x=0; x < ballSize; x++){ ball[4*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
-	for(int x=0; x < ballSize; x++){ ball[5*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
-	for(int x=0; x < ballSize; x++){ ball[6*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
-	for(int x=0; x < ballSize; x++){ ball[7*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
-	for(int x=0; x < ballSize; x++){ ball[8*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
-	for(int x=0; x < ballSize; x++){ ball[9*ballSize+x]=0; if(x >= 3 && x <= 6){ ball[0*ballSize+x]=1; }}
+	int x;
+	for(x=0; x < ballSize; x++){ ball[0*ballSize+x]=0; if(x >= 3 && x <= 6){ ball[0*ballSize+x]=1; }}
+	for(x=0; x < ballSize; x++){ ball[1*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
+	for(x=0; x < ballSize; x++){ ball[2*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
+	for(x=0; x < ballSize; x++){ ball[3*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
+	for(x=0; x < ballSize; x++){ ball[4*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
+	for(x=0; x < ballSize; x++){ ball[5*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
+	for(x=0; x < ballSize; x++){ ball[6*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
+	for(x=0; x < ballSize; x++){ ball[7*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
+	for(x=0; x < ballSize; x++){ ball[8*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
+	for(x=0; x < ballSize; x++){ ball[9*ballSize+x]=0; if(x >= 3 && x <= 6){ ball[0*ballSize+x]=1; }}
 	
 	/* INIT BALL */
 	
