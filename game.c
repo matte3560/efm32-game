@@ -239,6 +239,7 @@ void update(float dt) { // update ball position
 		win=true;
 	}
 	if(win) {
+		ballSpeed = 100;
 		ballPos.x = SCREEN_WIDTH/2-(ballSize/2.0f);
 		ballPos.y = SCREEN_HEIGHT/2-(ballSize/2.0f);
 		// Setting up max 20 degree angle in random direction
