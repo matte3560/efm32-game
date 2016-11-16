@@ -151,22 +151,22 @@ void initGame(int fbfd, uint16_t* addr) {
 
 void input(int driver, float dt) { // update player positions
 	if(SW2) {
-		playerLeftPos.y+=playerLeftSpeed*dt;
+		playerLeftPos.y-=playerLeftSpeed*dt;
 		if(playerLeftPos.y < 0)
 			playerLeftPos.y=0;
 	}
 	if(SW4) {
-		playerLeftPos.y-=playerLeftSpeed*dt;
+		playerLeftPos.y+=playerLeftSpeed*dt;
 		if(playerLeftPos.y+playerLeftSizeY >= SCREEN_HEIGHT)
 			playerLeftPos.y=SCREEN_HEIGHT-playerLeftSizeY-1;
 	}
 	if(SW6) {
-		playerRightPos.y+=playerRightSpeed*dt;
+		playerRightPos.y-=playerRightSpeed*dt;
 		if(playerRightPos.y < 0)
 			playerRightPos.y=0;
 	}
 	if(SW8) {
-		playerRightPos.y-=playerRightSpeed*dt;
+		playerRightPos.y+=playerRightSpeed*dt;
 		if(playerRightPos.y+playerRightSizeY >= SCREEN_HEIGHT)
 			playerRightPos.y=SCREEN_HEIGHT-playerRightSizeY-1;
 	}
@@ -343,7 +343,7 @@ void renderGame(int fbfd, uint16_t* addr) {
 
 void interrupt_handler(int n, siginfo_t *info, void *unused) //interrupt function
 {
-    printf("USER SPACE!!!! Signal nr.: %d\n", n);
+    //printf("USER SPACE!!!! Signal nr.: %d\n", n);
 	int character;
 	read(driver, &character, 1);
 	character=(~character) & 0xFF;
@@ -353,39 +353,37 @@ void interrupt_handler(int n, siginfo_t *info, void *unused) //interrupt functio
 	SW8=false;
 	
 	if((character & 0b10000000) != 0) {
-		printf("SW8\n");
+		//printf("SW8\n");
 		SW8=true;
 	}
 	if((character & 0b01000000) != 0) {
-		printf("SW7\n");
+		//printf("SW7\n");
 	}
 	if((character & 0b00100000) != 0) {
-		printf("SW6\n");
+		//printf("SW6\n");
 		SW6=true;
 	}
 	if((character & 0b00010000) != 0) {
-		printf("SW5\n");
+		//printf("SW5\n");
 	}
 	if((character & 0b00001000) != 0) {
-		printf("SW4\n");
+		//printf("SW4\n");
 		SW4=true;
 	}
 	if((character & 0b00000100) != 0) {
-		printf("SW3\n");
+		//printf("SW3\n");
 	}
 	if((character & 0b00000010) != 0) {
-		printf("SW2\n");
+		//printf("SW2\n");
 		SW2=true;
 	}
 	if((character & 0b00000001) != 0) {
-		printf("SW1\n");
+		//printf("SW1\n");
 	}
 }
 
 int main(int argc, char *argv[])
 {
-	printf("Hello World, I'm game!\n");
-	
 	int FPS=30;
 	double frameTime = 1.0 / FPS;
 	struct timeval lastTime;
