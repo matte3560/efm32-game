@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <sys/types.h>
 #include <sys/mman.h>
 #include <linux/fb.h>
 #include <stdbool.h>
@@ -18,7 +19,8 @@
 #define SCREEN_HEIGHT 240
 #define SCREENSIZE_BYTES 153600
 
-void interrupt_handler(); //interrupt function prototype
+int driver;
+void interrupt_handler(int n, siginfo_t *info, void *unused); //interrupt function prototype
 
 typedef struct {
   float x, y;
@@ -97,24 +99,15 @@ void initGame(int fbfd, uint16_t* addr) {
 	/* INIT SCREEN */
 	
 	/* INIT GAMEPAD */
-	/*driver = fopen("/dev/gamepad", "rb");
-	if (!driver) {
-        printf("driver open error\n");
-		exit(1);
-    }
-    if (signal(SIGIO, &interrupt_handler) == SIG_ERR) {
-        printf("interrupt handler error\n");
-        exit(1);
-    }
-    if (fcntl(fileno(driver), F_SETOWN, getpid()) == -1) {
-        printf("PID error.\n");
-        exit(1);
-    }
-    long oflags = fcntl(fileno(driver), F_GETFL);
-    if (fcntl(fileno(driver), F_SETFL, oflags | FASYNC) == -1) {
-        printf("FASYNC error\n");
-        exit(1);
-    }*/
+
+	/* setup the signal handler for SIGUSER1 
+ 	 * SA_SIGINFO -> we want the signal handler function with 3 arguments
+ 	 */
+	struct sigaction sig;
+	sig.sa_sigaction = interrupt_handler;
+	sig.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &sig, NULL);
+
 	/* INIT GAMEPAD */
 	
 	srand(time(0)); // seed the random number generator
@@ -368,9 +361,9 @@ void renderGame(int fbfd, uint16_t* addr) {
 	/* RENDER PLAYER RIGHT */
 }
 
-void interrupt_handler(int signalnr) //interrupt function
+void interrupt_handler(int n, siginfo_t *info, void *unused) //interrupt function
 {
-    printf("Signal nr.: %d\n", signalnr);
+    printf("USER SPACE!!!! Signal nr.: %d\n", n);
 	//Now read from driver
 }
 
@@ -389,7 +382,7 @@ int main(int argc, char *argv[])
 	
 	int pfd = open("/dev/fb0", O_RDWR); // open framebuffer
 	uint16_t* addr = mmap(NULL, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, pfd, 0);
-	int driver = open("/dev/gamepad", O_RDWR);
+	driver = open("/dev/gamepad", O_RDWR);
 	
 	initGame(pfd, addr);
 	
