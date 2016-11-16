@@ -157,32 +157,44 @@ void input(int driver, float dt) { // update player positions
 	//printf("char read %x\n", c);
 	character=(~character) & 0xFF;
 	
-	if((character & 0b10000000) >> 7) {
+	if((character & 0b10000000) != 0) {
 		printf("SW8\n");
 		playerRightPos.y+=playerRightSpeed*dt;
+		if(playerRightPos.y+playerRightSizeY >= SCREEN_HEIGHT) {
+			playerRightPos.y = SCREEN_HEIGHT-playerRightSizeY-1;
+		}
 	}
-	if((character & 0b01000000) >> 6) {
+	if((character & 0b01000000) != 0) {
 		printf("SW7\n");
 	}
-	if((character & 0b00100000) >> 5) {
+	if((character & 0b00100000) != 0) {
 		printf("SW6\n");
 		playerRightPos.y-=playerRightSpeed*dt;
+		if(playerRightPos.y < 0) {
+			playerRightPos.y = 0;
+		}
 	}
-	if((character & 0b00010000) >> 4) {
+	if((character & 0b00010000) != 0) {
 		printf("SW5\n");
 	}
-	if((character & 0b00001000) >> 3) {
+	if((character & 0b00001000) != 0) {
 		printf("SW4\n");
 		playerLeftPos.y+=playerLeftSpeed*dt;
+		if(playerLeftPos.y+playerLeftSizeY >= SCREEN_HEIGHT) {
+			playerLeftPos.y = SCREEN_HEIGHT-playerLeftSizeY-1;
+		}
 	}
-	if((character & 0b00000100) >> 2) {
+	if((character & 0b00000100) != 0) {
 		printf("SW3\n");
 	}
-	if((character & 0b00000010) >> 1) {
+	if((character & 0b00000010) != 0) {
 		printf("SW2\n");
 		playerLeftPos.y-=playerLeftSpeed*dt;
+		if(playerLeftPos.y < 0) {
+			playerLeftPos.y = 0;
+		}
 	}
-	if(character & 0b00000001) {
+	if((character & 0b00000001) != 0) {
 		printf("SW1\n");
 	}
 }
