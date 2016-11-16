@@ -165,22 +165,22 @@ void initGame(int fbfd, uint16_t* addr) {
 }
 
 void input(int driver, float dt) { // update player positions
-	if(SW2) {
+	if(SW2 && !SW4) {
 		playerLeftPos.y-=playerLeftSpeed*dt;
 		if(playerLeftPos.y < 0)
 			playerLeftPos.y=0;
 	}
-	if(SW4) {
+	if(SW4 && !SW2) {
 		playerLeftPos.y+=playerLeftSpeed*dt;
 		if(playerLeftPos.y+playerLeftSizeY >= SCREEN_HEIGHT)
 			playerLeftPos.y=SCREEN_HEIGHT-playerLeftSizeY-1;
 	}
-	if(SW6) {
+	if(SW6 && !SW8) {
 		playerRightPos.y-=playerRightSpeed*dt;
 		if(playerRightPos.y < 0)
 			playerRightPos.y=0;
 	}
-	if(SW8) {
+	if(SW8 && !SW6) {
 		playerRightPos.y+=playerRightSpeed*dt;
 		if(playerRightPos.y+playerRightSizeY >= SCREEN_HEIGHT)
 			playerRightPos.y=SCREEN_HEIGHT-playerRightSizeY-1;
