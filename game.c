@@ -74,6 +74,7 @@ vec2 ballPosLastRender;
 vec2 ballDir;
 int ballSize;
 float ballSpeed;
+float ballSpeedIncrement;
 int *ball;
 
 // player left variables
@@ -129,7 +130,8 @@ void initGame(int fbfd, uint16_t* addr) {
 	ballDir.x=dir*cosf(angle);
 	ballDir.y=-sinf(angle);
 	ballDir = normalize(ballDir); // normalized direction vector
-	ballSpeed = 300.0f;
+	ballSpeed = 100.0f;
+	ballSpeedIncrement=10.0f;
 	ball=malloc(ballSize*ballSize*sizeof(int));
 	int x;
 	for(x=0; x < ballSize; x++){ ball[0*ballSize+x]=0; if(x >= 3 && x <= 6){ ball[0*ballSize+x]=1; }}
@@ -226,6 +228,7 @@ void input(int driver, float dt) { // update player positions
 }
 
 void update(float dt) { // update ball position
+	ballSpeed+=ballSpeedIncrement*dt; // ballspeed will be incremented by 10 every second
 	ballPos = add(ballPos, mul(ballDir, ballSpeed*dt));
 	
 	/* WIN LOGIC */
