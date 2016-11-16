@@ -74,6 +74,7 @@ vec2 ballPosLastRender;
 vec2 ballDir;
 int ballSize;
 float ballSpeed;
+int *ball;
 
 // player left variables
 vec2 playerLeftPos;
@@ -118,16 +119,29 @@ void initGame(int fbfd, uint16_t* addr) {
 	srand(time(0)); // seed the random number generator
 	
 	/* INIT BALL */
-	ballSize = 11;
+	ballSize = 10;
 	ballPos.x = SCREEN_WIDTH/2-(ballSize/2.0f);
 	ballPos.y = SCREEN_HEIGHT/2-(ballSize/2.0f);
 	ballPosLastRender = ballPos;
+	// Setting up max 20 degree angle in random direction
 	int dir = 2*(rand()%2)-1;
 	float angle = ((rand()/(float)RAND_MAX)*2 - 1)*(M_PI/6);
 	ballDir.x=dir*cosf(angle);
 	ballDir.y=-sinf(angle);
 	ballDir = normalize(ballDir); // normalized direction vector
 	ballSpeed = 300.0f;
+	ball=malloc(ballSize*ballSize*sizeof(int));
+	for(int x=0; x < ballSize; x++){ ball[0*ballSize+x]=0; if(x >= 3 && x <= 6){ ball[0*ballSize+x]=1; }}
+	for(int x=0; x < ballSize; x++){ ball[1*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
+	for(int x=0; x < ballSize; x++){ ball[2*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
+	for(int x=0; x < ballSize; x++){ ball[3*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
+	for(int x=0; x < ballSize; x++){ ball[4*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
+	for(int x=0; x < ballSize; x++){ ball[5*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
+	for(int x=0; x < ballSize; x++){ ball[6*ballSize+x]=0; if(x >= 0 && x <= 9){ ball[0*ballSize+x]=1; }}
+	for(int x=0; x < ballSize; x++){ ball[7*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
+	for(int x=0; x < ballSize; x++){ ball[8*ballSize+x]=0; if(x >= 1 && x <= 8){ ball[0*ballSize+x]=1; }}
+	for(int x=0; x < ballSize; x++){ ball[9*ballSize+x]=0; if(x >= 3 && x <= 6){ ball[0*ballSize+x]=1; }}
+	
 	/* INIT BALL */
 	
 	/* INIT LEFT PLAYER */
@@ -226,39 +240,6 @@ void update(float dt) { // update ball position
 	/* PLAYER RIGHT COLLISION */
 }
 
-void putpixel(int x, int y, uint16_t* addr) {
-	int index = y*SCREEN_WIDTH+x;
-	if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
-		addr[index]|=0b0000011111100000;
-}
-
-void drawcircle(int x0, int y0, int radius, uint16_t* addr)
-{
-    int x = radius;
-    int y = 0;
-    int err = 0;
-
-    while (x >= y)
-    {
-        putpixel(x0 + x, y0 + y, addr);
-        putpixel(x0 + y, y0 + x, addr);
-        putpixel(x0 - y, y0 + x, addr);
-        putpixel(x0 - x, y0 + y, addr);
-        putpixel(x0 - x, y0 - y, addr);
-        putpixel(x0 - y, y0 - x, addr);
-        putpixel(x0 + y, y0 - x, addr);
-        putpixel(x0 + x, y0 - y, addr);
-
-        y += 1;
-        err += 1 + 2*y;
-        if (2*(err-x) + 1 > 0)
-        {
-            x -= 1;
-            err += 1 - 2*x;
-        }
-    }
-}
-
 void renderGame(int fbfd, uint16_t* addr) {
 	memset(addr, 0, SCREENSIZE_BYTES); // clear buffer
 	struct fb_copyarea rect;
@@ -269,13 +250,10 @@ void renderGame(int fbfd, uint16_t* addr) {
 	int ballxpos = (int)ballPos.x;
 	int ballypos = (int)ballPos.y;
 	
-	//drawcircle(ballxpos+ballSize/2, ballypos+ballSize/2, ballSize/2-1, addr);
 	for(y = 0; y < ballSize; y++) {
 		for(x = 0; x < ballSize; x++) {
-			vec2 pixelfromcenter;
-			pixelfromcenter.x = x-ballSize/2;
-			pixelfromcenter.y = y-ballSize/2;
-			if(length(pixelfromcenter) <= ballSize/2) {
+			
+			if(ball[y*ballSize+x]==1) {
 				int index = (ballypos+y)*SCREEN_WIDTH+(ballxpos+x);
 				if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
 					addr[index]|=0b0000011111100000;
@@ -443,6 +421,8 @@ int main(int argc, char *argv[])
 			frames++;
 		}
 	} while(!done);
+	
+	free(ball);
 	
 	close(driver); // close driver
 	
