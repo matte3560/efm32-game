@@ -6,6 +6,7 @@
 
 #include "input.h"
 #include "screen.h"
+#include "sound.h"
 
 typedef struct {
   float x, y;
@@ -196,6 +197,7 @@ void update(float dt) { // update ball position
 		win=true;
 	}
 	if(win) {
+		soundScore();
 		ballSpeed = 100;
 		ballPos.x = SCREEN_WIDTH/2-(ballSize/2.0f);
 		ballPos.y = SCREEN_HEIGHT/2-(ballSize/2.0f);
@@ -299,7 +301,10 @@ int main(int argc, char *argv[])
 	
 	init_input();
 	init_screen();
+	initSound();
 	initGame();
+
+	soundStartup();
 	
 	bool done = false;
 	do {
@@ -310,8 +315,8 @@ int main(int argc, char *argv[])
 		double passedTime = ms/1e6;
 		lastTime = newTime;
 		
-		//if (passedTime > 0.10) // avoiding spiral of death
-		//	passedTime = 0.10;
+		if (passedTime > 2.00) // avoiding spiral of death
+			passedTime = 0.0;
 		
 		accumulator += passedTime;
 		frameCounter += passedTime;
