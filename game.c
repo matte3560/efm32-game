@@ -355,6 +355,9 @@ int main(int argc, char *argv[])
 		renderGame();
 
 		frames++;
+
+		// Sleep for 5ms to save power
+		usleep(5*1000);
 	} while(!done);
 	
 	free(ball);
