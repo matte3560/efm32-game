@@ -75,7 +75,7 @@ void soundWinning() {
 	playFreq(noteFreq('E',4), N_EIGHTH);
 	playFreq(noteFreq('G',4), N_QUARTER);
 	playFreq(noteFreq('E',4), N_EIGHTH);
-	playFreq(noteFreq('G',4), N_QUARTER);
+	playFreq(noteFreq('G',4), N_HALF);
 	finishPlay();
 }
 

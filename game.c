@@ -221,10 +221,9 @@ void update(float dt) { // update ball position
 		playerRightPos.y = (SCREEN_HEIGHT/2)-(playerRightSizeY/2);
 		
 		if(playerRightScore ==5 || playerLeftScore == 5) {
+			soundWinning();
 			playerRightScore=0;
 			playerLeftScore=0;
-			
-			//play sound here
 			
 			
 			drawscore(playerLeftScore, playerRightScore);
@@ -335,7 +334,7 @@ int main(int argc, char *argv[])
 		double passedTime = ms/1e6;
 		lastTime = newTime;
 		
-		if (passedTime > 2.00) // avoiding spiral of death
+		if (passedTime > 1.00) // avoiding spiral of death
 			passedTime = 0.0;
 		
 		accumulator += passedTime;
