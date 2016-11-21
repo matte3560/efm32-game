@@ -205,6 +205,7 @@ void update(float dt) { // update ball position
 		playerLeftScore++;
 	}
 	if(win) {
+		drawline();
 		drawscore(playerLeftScore, playerRightScore);
 		ballSpeed = 100;
 		ballPos.x = SCREEN_WIDTH/2-(ballSize/2.0f);
@@ -224,7 +225,6 @@ void update(float dt) { // update ball position
 			soundWinning();
 			playerRightScore=0;
 			playerLeftScore=0;
-			
 			
 			drawscore(playerLeftScore, playerRightScore);
 		} else {

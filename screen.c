@@ -13,6 +13,19 @@ void init_screen() {
 	
 	memset(addr, 0, SCREENSIZE_BYTES); //clear screen get rid of the penguin Tux
 	//add border
+	drawline();
+	
+	struct fb_copyarea rect;
+	
+	rect.dx = 0;
+	rect.dy = 0;
+	rect.width = SCREEN_WIDTH;
+	rect.height = 240;
+	
+	ioctl(fb, 0x4680, &rect);
+}
+
+void drawline() {
 	int x;
 	for(x=0; x < SCREEN_WIDTH; x++) {
 		addr[201*SCREEN_WIDTH+x]=0b1111111111111111;
@@ -21,9 +34,9 @@ void init_screen() {
 	struct fb_copyarea rect;
 	
 	rect.dx = 0;
-	rect.dy = 0;
+	rect.dy = 201;
 	rect.width = SCREEN_WIDTH;
-	rect.height = 240;
+	rect.height = 1;
 	
 	ioctl(fb, 0x4680, &rect);
 }
