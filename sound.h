@@ -3,6 +3,9 @@
 // Initialize sound system
 void initSound();
 
+// Play winning sound
+void soundWinning();
+
 // Play score sound
 void soundScore();
 

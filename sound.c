@@ -69,7 +69,7 @@ void initSound() {
 }
 
 // Play score sound
-void soundScore() {
+void soundWinning() {
 	playFreq(noteFreq('C',4), N_EIGHTH);
 	playFreq(noteFreq('D',4), N_EIGHTH);
 	playFreq(noteFreq('E',4), N_EIGHTH);
@@ -79,6 +79,34 @@ void soundScore() {
 	finishPlay();
 }
 
+// Play score sound
+void soundScore() {
+	playFreq(noteFreq('G',2), N_QUARTER);
+	playFreq(noteFreq('E',2), N_QUARTER);
+	playFreq(noteFreq('G',2), N_QUARTER);
+	playFreq(noteFreq('E',2), N_QUARTER);
+	playFreq(noteFreq('D',2), N_QUARTER);
+	playFreq(noteFreq('C',2), N_QUARTER);
+	finishPlay();
+}
+
 // Play startup sound
 void soundStartup() {
+	playFreq(noteFreq('A',4), N_EIGHTH);
+	playFreq(noteFreq('F',4), N_EIGHTH);
+	playFreq(noteFreq('C',4), N_EIGHTH);
+	playFreq(noteFreq('G',4), N_EIGHTH);
+	playFreq(noteFreq('D',4), N_EIGHTH);
+	playFreq(noteFreq('C',4), N_EIGHTH);
+	playFreq(noteFreq('A',4), N_EIGHTH);
+	playFreq(noteFreq('D',4), N_EIGHTH);
+	playFreq(noteFreq('E',4), N_EIGHTH);
+	playFreq(noteFreq('F',4), N_EIGHTH);
+	playFreq(noteFreq('G',4), N_EIGHTH);
+	playFreq(noteFreq('A',4), N_EIGHTH);
+	playFreq(noteFreq('F',4), N_EIGHTH);
+	playFreq(noteFreq('E',4), N_EIGHTH);
+	playFreq(noteFreq('C',4), N_EIGHTH);
+	playFreq(noteFreq('A',4), N_EIGHTH);
+	finishPlay();
 }
