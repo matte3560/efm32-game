@@ -2,15 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
-#include <stdbool.h>
 #include <math.h>
-#include <signal.h>
-#include <unistd.h>
 
+#include "input.h"
 #include "screen.h"
-
-int driver;
-void interrupt_handler(int n, siginfo_t *info, void *unused); //interrupt function prototype
 
 typedef struct {
   float x, y;
@@ -53,11 +48,6 @@ vec2 normalize(vec2 a) {
 	return ans;
 }
 
-bool SW2=false;
-bool SW4=false;
-bool SW6=false;
-bool SW8=false;
-
 // ball variables
 vec2 ballPos;
 vec2 ballPosLastRender;
@@ -82,18 +72,6 @@ int playerRightSizeY;
 float playerRightSpeed;
 
 void initGame() {
-	
-	/* INIT GAMEPAD */
-
-	/* setup the signal handler for SIGUSER1 
- 	 * SA_SIGINFO -> we want the signal handler function with 3 arguments
- 	 */
-	struct sigaction sig;
-	sig.sa_sigaction = interrupt_handler;
-	sig.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &sig, NULL);
-
-	/* INIT GAMEPAD */
 	
 	srand(time(0)); // seed the random number generator
 	
@@ -144,7 +122,7 @@ void initGame() {
 	/* INIT RIGHT PLAYER */
 }
 
-void input(int driver, float dt) { // update player positions
+void input(float dt) { // update player positions
 	// INTERRUPT
 	if(SW2 && !SW4) {
 		playerLeftPos.y-=playerLeftSpeed*dt;
@@ -273,31 +251,13 @@ void update(float dt) { // update ball position
 
 void renderGame() {
 
-	struct fb_copyarea rect;
-	int y;
-	int x;
+	clear_screenbuffer();
 	
 	/* RENDER BALL */
 	int ballxpos = (int)ballPos.x;
 	int ballypos = (int)ballPos.y;
 	
-	for(y = 0; y < ballSize; y++) {
-		for(x = 0; x < ballSize; x++) {
-			
-			if(ball[y*ballSize+x]==1) {
-				int index = (ballypos+y)*SCREEN_WIDTH+(ballxpos+x);
-				if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
-					addr[index]|=0b0000011111100000;
-			}
-		}
-	}
-	
-	rect.dx = (ballxpos < ballPosLastRender.x) ? ballxpos : ballPosLastRender.x;
-	rect.dy = (ballypos < ballPosLastRender.y) ? ballypos : ballPosLastRender.y;
-	rect.width = ((ballxpos > ballPosLastRender.x) ? ballxpos : ballPosLastRender.x)+(ballSize+1) - rect.dx;
-	rect.height = ((ballypos > ballPosLastRender.y) ? ballypos : ballPosLastRender.y)+(ballSize+1) - rect.dy;
-	
-	ioctl(fb, 0x4680, &rect);
+	drawball(ballxpos, ballypos, ballSize, ballPosLastRender.x, ballPosLastRender.y, ball, 0b0000011111100000);
 	
 	ballPosLastRender.x=ballxpos;
 	ballPosLastRender.y=ballypos;
@@ -306,21 +266,7 @@ void renderGame() {
 	/* RENDER PLAYER LEFT */
 	int playerleftposx = (int)playerLeftPos.x;
 	int playerleftposy = (int)playerLeftPos.y;
-	
-	for(y = 0; y < playerLeftSizeY; y++) {
-		for(x = 0; x < playerLeftSizeX; x++) {
-			int index = (playerleftposy+y)*SCREEN_WIDTH+(playerleftposx+x);
-			if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
-				addr[index]|=0b0000000000011111;
-		}
-	}
-	
-	rect.dx = (playerleftposx < playerLeftLastRender.x) ? playerleftposx : playerLeftLastRender.x;
-	rect.dy = (playerleftposy < playerLeftLastRender.y) ? playerleftposy : playerLeftLastRender.y;
-	rect.width = ((playerleftposx > playerLeftLastRender.x) ? playerleftposx : playerLeftLastRender.x)+(playerLeftSizeX+1) - rect.dx;
-	rect.height = ((playerleftposy > playerLeftLastRender.y) ? playerleftposy : playerLeftLastRender.y)+(playerLeftSizeY+1) - rect.dy;
-	
-	ioctl(fb, 0x4680, &rect);
+	drawrect(playerleftposx, playerleftposy, playerLeftSizeX, playerLeftSizeY, playerLeftLastRender.x, playerLeftLastRender.y, 0b0000000000011111);
 	
 	playerLeftLastRender.x=playerleftposx;
 	playerLeftLastRender.y=playerleftposy;
@@ -329,66 +275,11 @@ void renderGame() {
 	/* RENDER PLAYER RIGHT */
 	int playerrightposx = (int)playerRightPos.x;
 	int playerrightposy = (int)playerRightPos.y;
-	
-	for(y = 0; y < playerRightSizeY; y++) {
-		for(x = 0; x < playerRightSizeX; x++) {
-			int index = (playerrightposy+y)*SCREEN_WIDTH+(playerrightposx+x);
-			if(index >= 0 && index < SCREEN_WIDTH*SCREEN_HEIGHT)
-				addr[index]|=0b1111100000000000;
-		}
-	}
-	
-	rect.dx = (playerrightposx < playerRightLastRender.x) ? playerrightposx : playerRightLastRender.x;
-	rect.dy = (playerrightposy < playerRightLastRender.y) ? playerrightposy : playerRightLastRender.y;
-	rect.width = ((playerrightposx > playerRightLastRender.x) ? playerrightposx : playerRightLastRender.x)+(playerRightSizeX+1) - rect.dx;
-	rect.height = ((playerrightposy > playerRightLastRender.y) ? playerrightposy : playerRightLastRender.y)+(playerRightSizeY+1) - rect.dy;
-	
-	ioctl(fb, 0x4680, &rect);
+	drawrect(playerrightposx, playerrightposy, playerRightSizeX, playerRightSizeY, playerRightLastRender.x, playerRightLastRender.y, 0b1111100000000000);
 	
 	playerRightLastRender.x=playerrightposx;
 	playerRightLastRender.y=playerrightposy;
 	/* RENDER PLAYER RIGHT */
-}
-
-void interrupt_handler(int n, siginfo_t *info, void *unused) //interrupt function
-{
-    //printf("USER SPACE!!!! Signal nr.: %d\n", n);
-	int character;
-	read(driver, &character, 1);
-	character=(~character) & 0xFF;
-	SW2=false;
-	SW4=false;
-	SW6=false;
-	SW8=false;
-	
-	if((character & 0b10000000) != 0) {
-		//printf("SW8\n");
-		SW8=true;
-	}
-	if((character & 0b01000000) != 0) {
-		//printf("SW7\n");
-	}
-	if((character & 0b00100000) != 0) {
-		//printf("SW6\n");
-		SW6=true;
-	}
-	if((character & 0b00010000) != 0) {
-		//printf("SW5\n");
-	}
-	if((character & 0b00001000) != 0) {
-		//printf("SW4\n");
-		SW4=true;
-	}
-	if((character & 0b00000100) != 0) {
-		//printf("SW3\n");
-	}
-	if((character & 0b00000010) != 0) {
-		//printf("SW2\n");
-		SW2=true;
-	}
-	if((character & 0b00000001) != 0) {
-		//printf("SW1\n");
-	}
 }
 
 int main(int argc, char *argv[])
@@ -402,8 +293,7 @@ int main(int argc, char *argv[])
 	int frames = 0;
 	double frameCounter = 0.0;
 	
-	driver = open("/dev/gamepad", O_RDWR);
-	
+	init_input();
 	init_screen();
 	initGame();
 	
@@ -430,7 +320,7 @@ int main(int argc, char *argv[])
 			accumulator -= frameTime;
 			
 			//game input
-			input(driver, (float)frameTime);
+			input((float)frameTime);
 			//game update
 			update((float)frameTime);
 			
@@ -453,8 +343,8 @@ int main(int argc, char *argv[])
 	} while(!done);
 	
 	free(ball);
-	close(driver); // close driver
 	
+	close_input();
 	close_screen();
 	
 	exit(EXIT_SUCCESS);

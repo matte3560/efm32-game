@@ -13,14 +13,17 @@ LDFLAGS +=-lm
 
 all: game
 
-game: game.o screen.o
-	${CC} ${CFLAGS} -o game game.o screen.o ${LDFLAGS}
+game: game.o screen.o input.o
+	${CC} ${CFLAGS} -o game game.o screen.o input.o ${LDFLAGS}
 
-game.o: game.c screen.h
+game.o: game.c screen.h input.h
 	${CC} ${CFLAGS} -c game.c
 
 screen.o: screen.c screen.h
 	${CC} ${CFLAGS} -c screen.c
+	
+input.o: input.c input.h
+	${CC} ${CFLAGS} -c input.c
    
 clean:
 	-rm -f game *.o
