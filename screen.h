@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
+#define SCREEN_HEIGHT 200
 #define SCREENSIZE_BYTES 153600
 
 int fb;
