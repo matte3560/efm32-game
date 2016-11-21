@@ -125,6 +125,8 @@ void initGame() {
 	playerRightSpeed = 150.0f;
 	playerRightScore=0;
 	/* INIT RIGHT PLAYER */
+	
+	drawscore(playerLeftScore, playerRightScore);
 }
 
 void input(float dt) { // update player positions
@@ -203,7 +205,7 @@ void update(float dt) { // update ball position
 		playerLeftScore++;
 	}
 	if(win) {
-		soundScore();
+		drawscore(playerLeftScore, playerRightScore);
 		ballSpeed = 100;
 		ballPos.x = SCREEN_WIDTH/2-(ballSize/2.0f);
 		ballPos.y = SCREEN_HEIGHT/2-(ballSize/2.0f);
@@ -218,7 +220,17 @@ void update(float dt) { // update ball position
 		playerLeftPos.y = (SCREEN_HEIGHT/2)-(playerLeftSizeY/2);
 		playerRightPos.y = (SCREEN_HEIGHT/2)-(playerRightSizeY/2);
 		
-		drawscore(playerLeftScore, playerRightScore);
+		if(playerRightScore ==5 || playerLeftScore == 5) {
+			playerRightScore=0;
+			playerLeftScore=0;
+			
+			//play sound here
+			
+			
+			drawscore(playerLeftScore, playerRightScore);
+		} else {
+			soundScore();
+		}
 	}
 	/* WIN LOGIC */
 	

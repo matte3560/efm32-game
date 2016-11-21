@@ -17,24 +17,6 @@ void init_screen() {
 	for(x=0; x < SCREEN_WIDTH; x++) {
 		addr[201*SCREEN_WIDTH+x]=0b1111111111111111;
 	}
-
-	int i;
-	int j;
-	for(j = 0; j < 35; j++) {
-		for(i =0; i < 25; i++) {
-			if(number0[j*25+i]==1) {
-				addr[(204+j)*SCREEN_WIDTH+(40+i)]=0b0000000000011111;
-			}
-		}
-	}
-	
-	for(j = 0; j < 35; j++) {
-		for(i =0; i < 25; i++) {
-			if(number0[j*25+i]==1) {
-				addr[(204+j)*SCREEN_WIDTH+(SCREEN_WIDTH-40-25+i)]=0b1111100000000000;
-			}
-		}
-	}
 	
 	struct fb_copyarea rect;
 	
@@ -105,6 +87,8 @@ void drawscore(int playerLeftScore, int playerRightScore) {
 		number = number3;
 	else if(playerLeftScore==4)
 		number = number4;
+	else if(playerLeftScore==5)
+		number = number5;
 	
 	int i;
 	int j;
@@ -127,6 +111,8 @@ void drawscore(int playerLeftScore, int playerRightScore) {
 		number = number3;
 	else if(playerRightScore==4)
 		number = number4;
+	else if(playerRightScore==5)
+		number = number5;
 	
 	for(j = 0; j < 35; j++) {
 		for(i =0; i < 25; i++) {
