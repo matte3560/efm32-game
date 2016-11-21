@@ -12,8 +12,6 @@ void init_screen() {
 	addr = mmap(0, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, fb, 0);
 	
 	memset(addr, 0, SCREENSIZE_BYTES); //clear screen get rid of the penguin Tux
-	//add border
-	drawline();
 	
 	struct fb_copyarea rect;
 	
@@ -23,6 +21,8 @@ void init_screen() {
 	rect.height = 240;
 	
 	ioctl(fb, 0x4680, &rect);
+	
+	drawline();
 }
 
 void drawline() {
