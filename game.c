@@ -313,7 +313,6 @@ int main(int argc, char *argv[])
 	double frameTime = 1.0 / FPS;
 	struct timeval lastTime;
 	gettimeofday(&lastTime, NULL);
-	double accumulator = 0.0;
 
 	int frames = 0;
 	double frameCounter = 0.0;
@@ -329,45 +328,33 @@ int main(int argc, char *argv[])
 	do {
 		struct timeval newTime;
 		gettimeofday(&newTime, NULL);
-		
+
 		long int ms = ((newTime.tv_sec * 1000000 + newTime.tv_usec) - (lastTime.tv_sec * 1000000 + lastTime.tv_usec));
 		double passedTime = ms/1e6;
 		lastTime = newTime;
-		
+
 		if (passedTime > 1.00) // avoiding spiral of death
 			passedTime = 0.0;
-		
-		accumulator += passedTime;
+
 		frameCounter += passedTime;
 
-		bool render = false;
-		while (accumulator >= frameTime)
+		//game input
+		input((float)passedTime);
+		//game update
+		update((float)passedTime);
+
+		if (frameCounter >= 1.0)
 		{
-			render = true;
+			printf("FPS: %d\n", frames);
 
-			accumulator -= frameTime;
-			
-			//game input
-			input((float)frameTime);
-			//game update
-			update((float)frameTime);
-			
-			if (frameCounter >= 1.0)
-			{
-				printf("FPS: %d\n", frames);
-
-				frames = 0;
-				frameCounter = 0.0;
-			}
+			frames = 0;
+			frameCounter = 0.0;
 		}
 
-		if (render)
-		{
-			//render framebuffer
-			renderGame();
-			
-			frames++;
-		}
+		//render framebuffer
+		renderGame();
+
+		frames++;
 	} while(!done);
 	
 	free(ball);
