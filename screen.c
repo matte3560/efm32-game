@@ -27,7 +27,7 @@ void init_screen() {
 	rect.dx = 0;
 	rect.dy = 0;
 	rect.width = SCREEN_WIDTH;
-	rect.height = SCREEN_HEIGHT;
+	rect.height = 240;
 	
 	ioctl(fb, 0x4680, &rect);
 }
