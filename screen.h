@@ -18,6 +18,7 @@ uint16_t* addr;
 void init_screen();
 void drawball(int x, int y, int size, int lastx, int lasty, int* ball, uint16_t color);
 void drawrect(int x, int y, int width, int height, int lastx, int lasty, uint16_t color);
+void drawscore(int playerLeftScore, int playerRightScore);
 void clear_screenbuffer();
 
 void close_screen();

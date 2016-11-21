@@ -64,6 +64,7 @@ vec2 playerLeftLastRender;
 int playerLeftSizeX;
 int playerLeftSizeY;
 float playerLeftSpeed;
+int playerLeftScore;
 
 // player right variables
 vec2 playerRightPos;
@@ -71,6 +72,7 @@ vec2 playerRightLastRender;
 int playerRightSizeX;
 int playerRightSizeY;
 float playerRightSpeed;
+int playerRightScore;
 
 void initGame() {
 	
@@ -111,6 +113,7 @@ void initGame() {
 	playerLeftPos.y = (SCREEN_HEIGHT/2)-(playerLeftSizeY/2);
 	playerLeftLastRender = playerLeftPos;
 	playerLeftSpeed = 150.0f;
+	playerLeftScore=0;
 	/* INIT LEFT PLAYER */
 	
 	/* INIT RIGHT PLAYER */
@@ -120,6 +123,7 @@ void initGame() {
 	playerRightPos.y = (SCREEN_HEIGHT/2)-(playerRightSizeY/2);
 	playerRightLastRender = playerRightPos;
 	playerRightSpeed = 150.0f;
+	playerRightScore=0;
 	/* INIT RIGHT PLAYER */
 }
 
@@ -193,8 +197,10 @@ void update(float dt) { // update ball position
 	bool win=false;
 	if(ballPos.x <= playerLeftPos.x) { // player right win
 		win=true;
+		playerRightScore++;
 	} else if(ballPos.x+ballSize >= playerRightPos.x+playerRightSizeX) { // player left win
 		win=true;
+		playerLeftScore++;
 	}
 	if(win) {
 		soundScore();
@@ -211,6 +217,8 @@ void update(float dt) { // update ball position
 		// reset player positions
 		playerLeftPos.y = (SCREEN_HEIGHT/2)-(playerLeftSizeY/2);
 		playerRightPos.y = (SCREEN_HEIGHT/2)-(playerRightSizeY/2);
+		
+		drawscore(playerLeftScore, playerRightScore);
 	}
 	/* WIN LOGIC */
 	
