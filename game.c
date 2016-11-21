@@ -205,6 +205,10 @@ void update(float dt) { // update ball position
 		ballDir.x=dir*cosf(angle);
 		ballDir.y=-sinf(angle);
 		ballDir = normalize(ballDir); // normalized direction vector
+		
+		// reset player positions
+		playerLeftPos.y = (SCREEN_HEIGHT/2)-(playerLeftSizeY/2);
+		playerRightPos.y = (SCREEN_HEIGHT/2)-(playerRightSizeY/2);
 	}
 	/* WIN LOGIC */
 	
