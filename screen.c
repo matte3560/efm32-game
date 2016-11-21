@@ -131,7 +131,7 @@ void drawscore(int playerLeftScore, int playerRightScore) {
 	for(j = 0; j < 35; j++) {
 		for(i =0; i < 25; i++) {
 			addr[(204+j)*SCREEN_WIDTH+(SCREEN_WIDTH-40-25+i)]=0;
-			if(number0[j*25+i]==1) {
+			if(number[j*25+i]==1) {
 				addr[(204+j)*SCREEN_WIDTH+(SCREEN_WIDTH-40-25+i)]=0b1111100000000000;
 			}
 		}
@@ -140,9 +140,9 @@ void drawscore(int playerLeftScore, int playerRightScore) {
 	struct fb_copyarea rect;
 	
 	rect.dx = 0;
-	rect.dy = 202;
+	rect.dy = 203;
 	rect.width = SCREEN_WIDTH;
-	rect.height = 38;
+	rect.height = 37;
 	
 	ioctl(fb, 0x4680, &rect);
 }
