@@ -2,22 +2,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/time.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <linux/fb.h>
 #include <stdbool.h>
-#include <string.h>
-#include <stdint.h>
 #include <math.h>
 #include <signal.h>
+#include <unistd.h>
 
-#define SCREEN_WIDTH 320
-#define SCREEN_HEIGHT 240
-#define SCREENSIZE_BYTES 153600
+#include "screen.h"
 
 int driver;
 void interrupt_handler(int n, siginfo_t *info, void *unused); //interrupt function prototype
@@ -91,19 +81,7 @@ int playerRightSizeX;
 int playerRightSizeY;
 float playerRightSpeed;
 
-void initGame(int fbfd, uint16_t* addr) {
-	
-	/* INIT SCREEN */
-	memset(addr, 0, SCREENSIZE_BYTES); //clear screen get rid of the penguin Tux
-	struct fb_copyarea rect;
-	
-	rect.dx = 0;
-	rect.dy = 0;
-	rect.width = SCREEN_WIDTH;
-	rect.height = SCREEN_HEIGHT;
-	
-	ioctl(fbfd, 0x4680, &rect);
-	/* INIT SCREEN */
+void initGame() {
 	
 	/* INIT GAMEPAD */
 
@@ -167,6 +145,7 @@ void initGame(int fbfd, uint16_t* addr) {
 }
 
 void input(int driver, float dt) { // update player positions
+	// INTERRUPT
 	if(SW2 && !SW4) {
 		playerLeftPos.y-=playerLeftSpeed*dt;
 		if(playerLeftPos.y < 0)
@@ -292,8 +271,8 @@ void update(float dt) { // update ball position
 	/* PLAYER RIGHT COLLISION */
 }
 
-void renderGame(int fbfd, uint16_t* addr) {
-	memset(addr, 0, SCREENSIZE_BYTES); // clear buffer
+void renderGame() {
+
 	struct fb_copyarea rect;
 	int y;
 	int x;
@@ -318,7 +297,7 @@ void renderGame(int fbfd, uint16_t* addr) {
 	rect.width = ((ballxpos > ballPosLastRender.x) ? ballxpos : ballPosLastRender.x)+(ballSize+1) - rect.dx;
 	rect.height = ((ballypos > ballPosLastRender.y) ? ballypos : ballPosLastRender.y)+(ballSize+1) - rect.dy;
 	
-	ioctl(fbfd, 0x4680, &rect);
+	ioctl(fb, 0x4680, &rect);
 	
 	ballPosLastRender.x=ballxpos;
 	ballPosLastRender.y=ballypos;
@@ -341,7 +320,7 @@ void renderGame(int fbfd, uint16_t* addr) {
 	rect.width = ((playerleftposx > playerLeftLastRender.x) ? playerleftposx : playerLeftLastRender.x)+(playerLeftSizeX+1) - rect.dx;
 	rect.height = ((playerleftposy > playerLeftLastRender.y) ? playerleftposy : playerLeftLastRender.y)+(playerLeftSizeY+1) - rect.dy;
 	
-	ioctl(fbfd, 0x4680, &rect);
+	ioctl(fb, 0x4680, &rect);
 	
 	playerLeftLastRender.x=playerleftposx;
 	playerLeftLastRender.y=playerleftposy;
@@ -364,7 +343,7 @@ void renderGame(int fbfd, uint16_t* addr) {
 	rect.width = ((playerrightposx > playerRightLastRender.x) ? playerrightposx : playerRightLastRender.x)+(playerRightSizeX+1) - rect.dx;
 	rect.height = ((playerrightposy > playerRightLastRender.y) ? playerrightposy : playerRightLastRender.y)+(playerRightSizeY+1) - rect.dy;
 	
-	ioctl(fbfd, 0x4680, &rect);
+	ioctl(fb, 0x4680, &rect);
 	
 	playerRightLastRender.x=playerrightposx;
 	playerRightLastRender.y=playerrightposy;
@@ -423,11 +402,10 @@ int main(int argc, char *argv[])
 	int frames = 0;
 	double frameCounter = 0.0;
 	
-	int pfd = open("/dev/fb0", O_RDWR); // open framebuffer
-	uint16_t* addr = mmap(NULL, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, pfd, 0);
 	driver = open("/dev/gamepad", O_RDWR);
 	
-	initGame(pfd, addr);
+	init_screen();
+	initGame();
 	
 	bool done = false;
 	do {
@@ -468,19 +446,16 @@ int main(int argc, char *argv[])
 		if (render)
 		{
 			//render framebuffer
-			renderGame(pfd, addr);
+			renderGame();
 			
 			frames++;
 		}
 	} while(!done);
 	
 	free(ball);
-	
 	close(driver); // close driver
 	
-	//close framebuffer
-	munmap(addr, SCREENSIZE_BYTES);
-	close(pfd);
+	close_screen();
 	
 	exit(EXIT_SUCCESS);
 }
