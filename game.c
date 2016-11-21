@@ -6,6 +6,7 @@
 
 #include "input.h"
 #include "screen.h"
+#include "sound.h"
 
 typedef struct {
   float x, y;
@@ -143,6 +144,10 @@ void input(float dt) { // update player positions
 		playerRightPos.y+=playerRightSpeed*dt;
 		if(playerRightPos.y+playerRightSizeY >= SCREEN_HEIGHT)
 			playerRightPos.y=SCREEN_HEIGHT-playerRightSizeY-1;
+	}
+
+	if(SW8) {
+		soundScore();
 	}
 	
 	// POLLING
@@ -299,6 +304,7 @@ int main(int argc, char *argv[])
 	
 	init_input();
 	init_screen();
+	initSound();
 	initGame();
 	
 	bool done = false;

@@ -1,12 +1,14 @@
 #include "screen.h"
 
 void init_screen() {
+	int x;
+
 	fb = open("/dev/fb0", O_RDWR); // open framebuffer
 	addr = mmap(0, SCREENSIZE_BYTES, PROT_READ | PROT_WRITE, MAP_SHARED, fb, 0);
 	
 	memset(addr, 0, SCREENSIZE_BYTES); //clear screen get rid of the penguin Tux
 	//add border
-	for(int x=0; x < SCREEN_WIDTH; x++) {
+	for(x=0; x < SCREEN_WIDTH; x++) {
 		addr[200*SCREEN_WIDTH+x]=0b1111111111111111;
 	}
 	
